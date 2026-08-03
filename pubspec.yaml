@@ -1,0 +1,90 @@
+name: tool_hub
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  go_router: ^14.0.0
+  dio: ^5.4.3
+  google_fonts: ^6.2.1
+  google_sign_in: ^6.2.12
+  shared_preferences: ^2.2.3
+  url_launcher: ^6.3.0
+  gal: ^2.3.0
+  flutter_colorpicker: ^1.1.0
+  open_filex: ^4.5.0
+  file_picker: ^8.0.3
+  qr_flutter: any
+  barcode_widget: any
+  mobile_scanner: any
+  intl: any
+  path_provider: any
+  share_plus: any
+  image_picker: any
+  image_cropper: any
+  signature: any
+  math_expressions: any
+  flutter_ringtone_player: any
+  table_calendar: any
+  flutter_local_notifications: any
+  timezone: any
+  disk_space_2: any
+  app_settings: any
+  pdf: ^3.11.0
+  printing: ^5.13.0
+  pedometer: any
+  permission_handler: any
+  record: any
+  audioplayers: any
+  http: any
+  cross_file: ^0.3.5+4
+  uuid: ^4.6.0
+  screenshot: ^3.0.0
+dependency_overrides:
+  flutter_plugin_android_lifecycle: 2.0.20
+  screenshot: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logos/toolhub_logo.png"
+  min_sdk_android: 21
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logos/
+    - assets/fonts/
+    - assets/animations/
+    - assets/sound/
+
+  fonts:
+    - family: SpaceGrotesk
+      fonts:
+        - asset: assets/fonts/SpaceGrotesk-Regular.ttf
+        - asset: assets/fonts/SpaceGrotesk-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/SpaceGrotesk-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/SpaceGrotesk-Bold.ttf
+          weight: 700
+
+    - family: ArchivoBlack
+      fonts:
+        - asset: assets/fonts/ArchivoBlack-Regular.ttf
+
+    - family: GeneralSans
+      fonts:
+        - asset: assets/fonts/GeneralSans-Variable.ttf

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "129091157986",
+    "project_id": "toolhubnaiyo",
+    "storage_bucket": "toolhubnaiyo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129091157986:android:1e06886cb57a7525b603bb",
+        "android_client_info": {
+          "package_name": "com.naiyo24.tool_hub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129091157986-92ogmcbg3aqpbr00n80oern2r90saps6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3277sdeAPMkLxZy58lkbdfr7JL1-iuTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129091157986-92ogmcbg3aqpbr00n80oern2r90saps6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
