@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application
-        android:label="ToolHub"
+        android:label="ToolHub24"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
