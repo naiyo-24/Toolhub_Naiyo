@@ -117,42 +117,75 @@ class _FileSharingScreenState extends State<FileSharingScreen> {
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black,
-                  offset: Offset(2, 2),
-                ),
-              ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.primaryPink,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(4, 4),
             ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: Colors.black),
-              onPressed: () => context.pop(),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(2, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded, color: Colors.black),
+                onPressed: () => context.pop(),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'File Sharing Tools',
-                  style: AppTextStyles.heroTitle.copyWith(fontSize: 24),
-                ),
-                Text(
-                  'Manage and share your files',
-                  style: AppTextStyles.bodyText.copyWith(color: Colors.black54),
-                ),
-              ],
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'File Sharing ',
+                          style: AppTextStyles.heroTitle.copyWith(fontSize: 22, color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: 'Tools',
+                          style: AppTextStyles.logoText.copyWith(fontSize: 22, color: Colors.black, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'MANAGE AND SHARE YOUR FILES',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyText.copyWith(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 48), // To balance the back button and center the text
+          ],
+        ),
       ),
     );
   }

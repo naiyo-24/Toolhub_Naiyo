@@ -173,25 +173,75 @@ class _FinanceToolsScreenState extends State<FinanceToolsScreen> {
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, size: 28),
-            onPressed: () => context.pop(),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Finance Tools', style: AppTextStyles.heroTitle.copyWith(fontSize: 28)),
-                const Text('Smart financial calculators', style: TextStyle(color: Colors.grey, fontSize: 14)),
-              ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.primaryPink,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(4, 4),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(2, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded, color: Colors.black),
+                onPressed: () => context.pop(),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Finance ',
+                          style: AppTextStyles.heroTitle.copyWith(fontSize: 22, color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: 'Tools',
+                          style: AppTextStyles.logoText.copyWith(fontSize: 22, color: Colors.black, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'SMART FINANCIAL CALCULATORS',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyText.copyWith(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 48), // To balance the back button and center the text
+          ],
+        ),
       ),
     );
   }
