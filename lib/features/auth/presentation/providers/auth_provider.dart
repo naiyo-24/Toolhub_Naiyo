@@ -16,7 +16,8 @@ class AuthNotifier extends StateNotifier<bool> {
   }
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId: '129091157986-92ogmcbg3aqpbr00n80oern2r90saps6.apps.googleusercontent.com',
+    serverClientId:
+        '129091157986-92ogmcbg3aqpbr00n80oern2r90saps6.apps.googleusercontent.com',
   );
 
   Future<void> _checkInitialAuth() async {
@@ -31,7 +32,7 @@ class AuthNotifier extends StateNotifier<bool> {
       if (account != null) {
         final auth = await account.authentication;
         final idToken = auth.idToken;
-        
+
         if (idToken != null) {
           // Send idToken to backend
           try {
@@ -40,13 +41,14 @@ class AuthNotifier extends StateNotifier<bool> {
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode({'id_token': idToken}),
             );
-            
+
             if (response.statusCode == 200) {
               final data = jsonDecode(response.body);
               final accessToken = data['access_token'];
               final user = data['user'];
-              final needsProfile = user['company_name'] == null || user['company_name'].toString().isEmpty;
-              
+              final needsProfile = user['company_name'] == null ||
+                  user['company_name'].toString().isEmpty;
+
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('auth_token', accessToken);
               await prefs.setBool('is_business_logged_in', true);
@@ -58,21 +60,23 @@ class AuthNotifier extends StateNotifier<bool> {
               if (user['company_logo_url'] != null) {
                 String fetchedLogo = user['company_logo_url'];
                 if (fetchedLogo.contains('/uploads/')) {
-                  fetchedLogo = fetchedLogo.substring(fetchedLogo.indexOf('/uploads/'));
+                  fetchedLogo =
+                      fetchedLogo.substring(fetchedLogo.indexOf('/uploads/'));
                 }
                 await prefs.setString('company_logo_url', fetchedLogo);
               }
               state = true;
               return true;
             } else {
-              debugPrint("Backend auth failed: ${response.statusCode} - ${response.body}");
+              debugPrint(
+                  "Backend auth failed: ${response.statusCode} - ${response.body}");
               // Fallback to local only if you want, or return false
             }
           } catch (e) {
             debugPrint("Error connecting to backend for auth: $e");
           }
         }
-        
+
         // Fallback or if no backend
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('is_business_logged_in', true);
@@ -82,49 +86,7 @@ class AuthNotifier extends StateNotifier<bool> {
       return false; // User canceled
     } catch (error) {
       debugPrint("Google Sign In Error: $error");
-      // Fallback for mocked login if Google Sign-In throws a PlatformException
-      // due to missing Firebase configuration during development
-      debugPrint("Falling back to simulated login since real Google Auth may fail without Firebase setup.");
-      
-      try {
-        final response = await http.post(
-          Uri.parse('${ApiConfig.baseUrl}/auth/mock'),
-          headers: {'Content-Type': 'application/json'},
-        );
-        
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          final accessToken = data['access_token'];
-          final user = data['user'];
-          final needsProfile = user['company_name'] == null || user['company_name'].toString().isEmpty;
-          
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('auth_token', accessToken);
-          await prefs.setBool('is_business_logged_in', true);
-          await prefs.setBool('needs_profile', needsProfile);
-          await prefs.setString('user_name', user['full_name'] ?? '');
-          await prefs.setString('user_email', user['email'] ?? '');
-          await prefs.setString('user_pic', user['profile_pic'] ?? '');
-          await prefs.setString('company_name', user['company_name'] ?? '');
-          if (user['company_logo_url'] != null) {
-            String fetchedLogo = user['company_logo_url'];
-            if (fetchedLogo.contains('/uploads/')) {
-              fetchedLogo = fetchedLogo.substring(fetchedLogo.indexOf('/uploads/'));
-            }
-            await prefs.setString('company_logo_url', fetchedLogo);
-          }
-          await prefs.setBool('is_business_logged_in', true);
-          state = true;
-          return true;
-        }
-      } catch (e) {
-        debugPrint("Mock backend auth failed: $e");
-      }
-      
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('is_business_logged_in', true);
-      state = true;
-      return true;
+      rethrow;
     }
   }
 

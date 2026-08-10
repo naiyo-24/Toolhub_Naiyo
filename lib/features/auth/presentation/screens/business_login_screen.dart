@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../providers/auth_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -11,10 +12,12 @@ class BusinessLoginScreen extends ConsumerStatefulWidget {
   const BusinessLoginScreen({super.key});
 
   @override
-  ConsumerState<BusinessLoginScreen> createState() => _BusinessLoginScreenState();
+  ConsumerState<BusinessLoginScreen> createState() =>
+      _BusinessLoginScreenState();
 }
 
-class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with SingleTickerProviderStateMixin {
+class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen>
+    with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   late AnimationController _animController;
   late Animation<double> _scaleAnimation;
@@ -44,7 +47,25 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
       _isLoading = true;
     });
 
-    final success = await ref.read(authProvider.notifier).signInWithGoogle();
+    bool success = false;
+    try {
+      success = await ref.read(authProvider.notifier).signInWithGoogle();
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $error', style: AppTextStyles.bodyText.copyWith(color: Colors.white)),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 10),
+          ),
+        );
+      }
+      return;
+    }
 
     if (mounted) {
       setState(() {
@@ -63,7 +84,8 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login failed or was canceled.', style: AppTextStyles.bodyText.copyWith(color: Colors.white)),
+            content: Text('Login failed or was canceled.',
+                style: AppTextStyles.bodyText.copyWith(color: Colors.white)),
             backgroundColor: AppColors.primaryBlack,
             behavior: SnackBarBehavior.floating,
           ),
@@ -84,7 +106,7 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
               painter: GridPainter(),
             ),
           ),
-          
+
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,7 +120,8 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
                       padding: const EdgeInsets.all(8),
                       borderRadius: 50,
                       onTap: () => context.pop(),
-                      child: const Icon(Icons.arrow_back_rounded, color: Colors.black, size: 24),
+                      child: const Icon(Icons.arrow_back_rounded,
+                          color: Colors.black, size: 24),
                     ),
                   ),
                 ),
@@ -124,7 +147,7 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
                           ),
                         ),
                         const SizedBox(height: 48),
-                        
+
                         NeoCard(
                           backgroundColor: AppColors.primaryYellow,
                           borderWidth: 4,
@@ -163,7 +186,7 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
                           ),
                         ),
                         const SizedBox(height: 48),
-                        
+
                         // Neo-brutalist Button
                         NeoCard(
                           backgroundColor: Colors.white,
@@ -173,42 +196,58 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen> with 
                           shadowOffset: const Offset(6, 6),
                           onTap: _isLoading ? null : _handleGoogleSignIn,
                           child: Center(
-                            child: _isLoading 
-                              ? const SizedBox(
-                                  width: 28,
-                                  height: 28,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 4,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                                  ),
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(
-                                      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png',
-                                      height: 24,
-                                      width: 24,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 28,
+                                    height: 28,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 4,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.black),
                                     ),
-                                    const SizedBox(width: 16),
-                                    Flexible(
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          'Continue with Google',
-                                          style: AppTextStyles.toolCardTitle.copyWith(
-                                            color: Colors.black,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: 1,
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(
+                                        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png',
+                                        height: 24,
+                                        width: 24,
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Flexible(
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            'Continue with Google',
+                                            style: AppTextStyles.toolCardTitle
+                                                .copyWith(
+                                              color: Colors.black,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w900,
+                                              letterSpacing: 1,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
+                                    ],
+                                  ),
                           ),
                         ),
+                        const SizedBox(height: 20),
+                        FutureBuilder<PackageInfo>(
+                          future: PackageInfo.fromPlatform(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return SelectableText(
+                                'Signature: ${snapshot.data?.buildSignature}',
+                                style: const TextStyle(color: Colors.black, fontSize: 10),
+                              );
+                            }
+                            return const SizedBox();
+                          },
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -230,12 +269,12 @@ class GridPainter extends CustomPainter {
       ..strokeWidth = 2;
 
     const spacing = 30.0;
-    
+
     // Draw horizontal lines
     for (double i = 0; i < size.height; i += spacing) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
     }
-    
+
     // Draw vertical lines
     for (double i = 0; i < size.width; i += spacing) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);

@@ -14,6 +14,46 @@
       },
       "oauth_client": [
         {
+          "client_id": "129091157986-0m9e894jvlbs4sp6fl63auv50muksn8m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naiyo24.tool_hub",
+            "certificate_hash": "b4292fa9c3440b2fc082717e571c1412e49bb99b"
+          }
+        },
+        {
+          "client_id": "129091157986-d3meir13ieqp0ogjtmgf5s56697mjvhl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naiyo24.tool_hub",
+            "certificate_hash": "b2603fbddc2ea8a6c19cc8356cc65dae65c4defe"
+          }
+        },
+        {
+          "client_id": "129091157986-k73pocfu2li4d3gt5acqjaop50riqpp3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naiyo24.tool_hub",
+            "certificate_hash": "8c338bbb1c41a1ff5e5e98a2076f047caafa79da"
+          }
+        },
+        {
+          "client_id": "129091157986-kj7t3l9ngaknb8fhpoj2026rtitpksn9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naiyo24.tool_hub",
+            "certificate_hash": "9bd23b3eb5bf96e98c4796db57e228aff65e36e3"
+          }
+        },
+        {
+          "client_id": "129091157986-vjjb9df0q3atpnr9vlqrmlqjnsokv78u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naiyo24.tool_hub",
+            "certificate_hash": "a39c527580266c143416f69a94090a7319492c35"
+          }
+        },
+        {
           "client_id": "129091157986-92ogmcbg3aqpbr00n80oern2r90saps6.apps.googleusercontent.com",
           "client_type": 3
         }

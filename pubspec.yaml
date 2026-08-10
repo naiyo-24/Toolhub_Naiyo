@@ -1,7 +1,7 @@
 name: tool_hub
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+11
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -42,6 +42,7 @@ dependencies:
   permission_handler: any
   record: any
   audioplayers: any
+  package_info_plus: ^8.0.0
   http: any
   cross_file: ^0.3.5+4
   uuid: ^4.6.0
