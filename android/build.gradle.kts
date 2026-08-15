@@ -19,7 +19,10 @@ subprojects {
     afterEvaluate {
         if (project.hasProperty("android")) {
             project.extensions.configure<com.android.build.gradle.BaseExtension>("android") {
-                compileSdkVersion(36)
+                compileSdkVersion(37)
+                if (namespace == null) {
+                    namespace = project.group.toString()
+                }
             }
         }
     }

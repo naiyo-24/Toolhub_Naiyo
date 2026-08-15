@@ -92,6 +92,21 @@ class AuthNotifier extends StateNotifier<bool> {
 
   Future<void> signOut() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      if (token != null) {
+        try {
+          await http.post(
+            Uri.parse('${ApiConfig.baseUrl}/auth/logout'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          );
+        } catch (e) {
+          debugPrint("Backend logout error: $e");
+        }
+      }
       await _googleSignIn.signOut();
     } catch (_) {}
     final prefs = await SharedPreferences.getInstance();

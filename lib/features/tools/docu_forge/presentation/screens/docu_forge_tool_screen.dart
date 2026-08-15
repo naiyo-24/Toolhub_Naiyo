@@ -97,7 +97,12 @@ class _DocuForgeToolScreenState extends State<DocuForgeToolScreen> {
 
       // For document scan, we want to open the camera using image_picker
       final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.camera);
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 85
+      );
       if (image != null) {
         CroppedFile? croppedFile = await ImageCropper().cropImage(
           sourcePath: image.path,

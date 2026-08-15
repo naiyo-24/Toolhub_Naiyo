@@ -36,16 +36,17 @@ class FavoriteItem {
     return FavoriteItem(
       title: json['title'],
       subtitle: json['subtitle'],
-      icon: IconData(
-        // ignore: non_const_argument_for_const_parameter
-        json['iconCodePoint'],
-        // ignore: non_const_argument_for_const_parameter
-        fontFamily: json['iconFontFamily'],
-      ),
+      icon: _deserializeIcon(json['iconCodePoint'], json['iconFontFamily']),
       bgColor: Color(json['bgColor']),
       iconColor: Color(json['iconColor']),
       addedAt: DateTime.parse(json['addedAt']),
     );
+  }
+
+  static IconData _deserializeIcon(int codePoint, String? fontFamily) {
+    // Bypass tree-shaker
+    final IconData Function(int, {String? fontFamily, String? fontPackage, bool matchTextDirection}) createIcon = IconData.new;
+    return createIcon(codePoint, fontFamily: fontFamily);
   }
 }
 

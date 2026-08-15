@@ -20,7 +20,9 @@ import '../../features/tools/student_toolkit/presentation/screens/flashcards_scr
 import '../../features/tools/student_toolkit/presentation/screens/timetable_screen.dart';
 import '../../features/tools/student_toolkit/presentation/screens/study_planner_screen.dart';
 import '../../features/tools/student_toolkit/presentation/screens/assignment_planner_screen.dart';
-import '../../features/tools/docu_forge/presentation/screens/docu_forge_screen.dart';
+import '../../features/tools/docu_forge/presentation/screens/docuforge_home_screen.dart';
+import '../../features/tools/docu_forge/presentation/screens/pdf_viewer_screen.dart';
+import '../../features/tools/docu_forge/data/models/document_model.dart';
 import '../../features/tools/docu_forge/presentation/screens/resume_builder_form_screen.dart';
 import '../../features/tools/docu_forge/presentation/screens/resume_template_selection_screen.dart';
 import '../../features/tools/docu_forge/presentation/screens/resume_preview_screen.dart';
@@ -28,6 +30,7 @@ import '../../features/tools/docu_forge/presentation/screens/ats_checker_screen.
 import '../../features/tools/docu_forge/presentation/screens/cover_letter_form_screen.dart';
 import '../../features/tools/docu_forge/presentation/screens/cover_letter_preview_screen.dart';
 import '../../features/tools/docu_forge/presentation/screens/docu_forge_tool_screen.dart';
+import '../../features/tools/docu_forge/presentation/screens/external_intent_screen.dart';
 import '../../features/tools/docu_forge/data/resume_model.dart';
 import '../../features/tools/docu_forge/data/cover_letter_model.dart';
 import '../../features/tools/business_toolkit/presentation/screens/business_toolkit_screen.dart';
@@ -124,6 +127,13 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: launchedFromNotification ? '/calendar' : (hasSeenOnboarding ? '/' : '/onboarding'),
+    errorBuilder: (context, state) {
+      final uriStr = state.uri.toString();
+      if (uriStr.startsWith('content://') || uriStr.startsWith('file://')) {
+        return ExternalIntentScreen(uri: uriStr);
+      }
+      return const HomeScreen();
+    },
     routes: [
       GoRoute(
         path: '/internet-tools',
@@ -446,7 +456,14 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
       ),
       GoRoute(
         path: '/docu-forge',
-        builder: (context, state) => const DocuForgeScreen(),
+        builder: (context, state) => const DocuForgeHomeScreen(),
+      ),
+      GoRoute(
+        path: '/pdf-viewer',
+        builder: (context, state) {
+          final doc = state.extra as Document;
+          return PdfViewerScreen(document: doc);
+        },
       ),
       GoRoute(
         path: '/id-card-generator',
