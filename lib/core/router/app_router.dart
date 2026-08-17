@@ -60,6 +60,7 @@ import '../../features/tools/health_lifestyle/presentation/screens/health_lifest
 import '../../features/tools/health_lifestyle/presentation/screens/health_tool_screen.dart';
 import '../../features/tools/productivity/presentation/screens/productivity_screen.dart';
 import '../../features/tools/productivity/presentation/screens/productivity_tool_screen.dart';
+import '../../features/tools/docu_forge/presentation/screens/utilities/images_to_pdf_screen.dart';
 
 import 'package:tool_hub/features/tools/travel_tools/presentation/screens/travel_tool_screen.dart';
 import '../../features/tools/form_builder/presentation/screens/form_builder_screen.dart';
@@ -464,6 +465,10 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
           final doc = state.extra as Document;
           return PdfViewerScreen(document: doc);
         },
+      ),
+      GoRoute(
+        path: '/images-to-pdf',
+        builder: (context, state) => const ImagesToPdfScreen(),
       ),
       GoRoute(
         path: '/id-card-generator',

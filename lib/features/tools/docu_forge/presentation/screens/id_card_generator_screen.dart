@@ -20,7 +20,8 @@ class IdCardGeneratorScreen extends StatefulWidget {
   State<IdCardGeneratorScreen> createState() => _IdCardGeneratorScreenState();
 }
 
-class _IdCardGeneratorScreenState extends State<IdCardGeneratorScreen> {
+class _IdCardGeneratorScreenState extends State<IdCardGeneratorScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final GlobalKey _globalKey = GlobalKey();
   
   // Form Data
@@ -38,6 +39,26 @@ class _IdCardGeneratorScreenState extends State<IdCardGeneratorScreen> {
   File? _signatureImage;
   File? _companyLogo;
   File? _authorizerSignature;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _orgController.dispose();
+    _nameController.dispose();
+    _idNumberController.dispose();
+    _roleController.dispose();
+    _dobController.dispose();
+    _bloodGroupController.dispose();
+    _contactController.dispose();
+    _authorizerRoleController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage(void Function(File) onPicked) async {
     final picker = ImagePicker();
@@ -91,17 +112,16 @@ class _IdCardGeneratorScreenState extends State<IdCardGeneratorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.primaryBlue,
-          title: Text('ID Card Generator', style: AppTextStyles.screenHeading.copyWith(color: Colors.white, fontSize: 24)),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-            onPressed: () => context.pop(),
-          ),
-          bottom: const TabBar(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryBlue,
+        title: Text('ID Card Generator', style: AppTextStyles.screenHeading.copyWith(color: Colors.white, fontSize: 24)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
+        bottom: TabBar(
+          controller: _tabController,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white60,
             indicatorColor: AppColors.primaryYellow,
@@ -111,12 +131,12 @@ class _IdCardGeneratorScreenState extends State<IdCardGeneratorScreen> {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildFormTab(),
-            _buildPreviewTab(),
-          ],
-        ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildFormTab(),
+          _buildPreviewTab(),
+        ],
       ),
     );
   }

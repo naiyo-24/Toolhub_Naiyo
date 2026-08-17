@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'scanner_screen.dart';
 import 'pdf_viewer_screen.dart';
 import '../providers/docuforge_providers.dart';
@@ -13,12 +14,19 @@ import 'package:file_picker/file_picker.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'utilities/merge_pdfs_screen.dart';
 import 'utilities/images_to_pdf_screen.dart';
+import 'utilities/pdf_to_image_screen.dart';
 import 'utilities/pdf_security_screen.dart';
 import 'utilities/watermark_pdf_screen.dart';
 import 'utilities/ocr_extract_screen.dart';
+import 'package:share_plus/share_plus.dart';
 import 'utilities/split_pdf_screen.dart';
 import '../../data/models/document_model.dart';
-import 'package:share_plus/share_plus.dart';
+import 'id_card_generator_screen.dart';
+import 'ats_checker_screen.dart';
+import 'cover_letter_form_screen.dart';
+import 'resume_builder_form_screen.dart';
+import 'utilities/pdf_converter_screen.dart';
+import '../../../file_sharing/presentation/screens/pdf_compressor_screen.dart';
 
 class DocuForgeHomeScreen extends ConsumerWidget {
   const DocuForgeHomeScreen({super.key});
@@ -305,195 +313,307 @@ class DocuForgeHomeScreen extends ConsumerWidget {
     final allFoldersAsync = ref.watch(allFoldersProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF2563EB),
-        title: const Text(
-          'ToolHub PDF Suite',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      backgroundColor: const Color(0xFFFBFBFB), // Very light off-white
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              const Text(
-                'Welcome to your workspace',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Neo-brutal button
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ScannerScreen())).then((_) {
-                    ref.invalidate(recentDocumentsProvider);
-                  });
-                },
-                child: Container(
+                // Custom Neo-Brutalist Header
+                Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2563EB),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF111827), width: 4),
+                    color: const Color(0xFFFF4081), // Pink color from screenshot
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 3),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0xFF111827),
+                        color: Colors.black,
                         offset: Offset(4, 4),
                         blurRadius: 0,
                       )
                     ],
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.document_scanner, size: 40, color: Colors.white),
-                      SizedBox(width: 16),
+                      // Back Button
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black, width: 3),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black,
+                                offset: Offset(2, 2),
+                                blurRadius: 0,
+                              )
+                            ],
+                          ),
+                          child: const Icon(Icons.arrow_back, color: Colors.black, size: 24),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Header Text
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Scan Document',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            RichText(
+                              text: const TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'ToolHub PDF ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Suite',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Text(
-                              'Camera, auto-crop, batch mode',
+                            const SizedBox(height: 4),
+                            const Text(
+                              'MANAGE AND SCAN YOUR DOCUMENTS',
                               style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
+                                color: Colors.black,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(Icons.arrow_forward_ios, color: Colors.white),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Folders',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF111827),
+                const SizedBox(height: 32),
+                
+                const Text(
+                  'Welcome to your workspace',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Scan Document Hero Card (Neo-Brutalism)
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ScannerScreen())).then((_) {
+                      ref.invalidate(recentDocumentsProvider);
+                    });
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black,
+                          offset: Offset(4, 4),
+                          blurRadius: 0,
+                        )
+                      ],
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.document_scanner_rounded, size: 40, color: Colors.white),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Scan Document',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Camera, auto-crop, batch mode',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
+                      ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.create_new_folder),
-                    onPressed: () => _showCreateFolderDialog(context, ref),
-                  )
-                ],
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 50,
-                child: allFoldersAsync.when(
-                  data: (folders) {
-                    if (folders.isEmpty) {
-                      return const Center(child: Text('No folders yet.'));
-                    }
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: folders.length,
-                      itemBuilder: (context, index) {
-                        final folder = folders[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => FolderDocumentsScreen(folder: folder),
-                              ),
-                            );
-                          },
-                          onLongPress: () {
-                            _showDeleteFolderDialog(context, ref, folder);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF59E0B),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFF111827), width: 2),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.folder, color: Colors.white, size: 20),
-                                const SizedBox(width: 8),
-                                Text(folder.name, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, st) => const Center(child: Text('Error loading folders')),
                 ),
-              ),
-
-              const SizedBox(height: 24),
-              const Text(
-                'PDF Utilities',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF111827),
+                const SizedBox(height: 32),
+                
+                const Text(
+                  'PDF Utilities',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
+                const SizedBox(height: 16),
+                GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.9,
                   children: [
-                    _buildPdfTool(context, ref, Icons.file_open, 'Open PDF', const Color(0xFFF97316)),
-                    _buildPdfTool(context, ref, Icons.low_priority, 'Rearrange', const Color(0xFF3B82F6)),
-                    _buildPdfTool(context, ref, Icons.image, 'Images to PDF', const Color(0xFFEC4899)),
-                    _buildPdfTool(context, ref, Icons.merge_type, 'Merge', const Color(0xFF7C3AED)),
-                    _buildPdfTool(context, ref, Icons.call_split, 'Split', const Color(0xFFEAB308)),
-                    _buildPdfTool(context, ref, Icons.lock_outline, 'Password', const Color(0xFFEF4444)),
-                    _buildPdfTool(context, ref, Icons.lock_open, 'Unlock PDF', const Color(0xFF14B8A6)),
-                    _buildPdfTool(context, ref, Icons.branding_watermark, 'Watermark', const Color(0xFF06B6D4)),
-                    _buildPdfTool(context, ref, Icons.document_scanner_outlined, 'OCR Extract', const Color(0xFF10B981)),
+                    _buildPdfTool(context, ref, Icons.file_open_rounded, 'Open PDF', const Color(0xFFF97316)),
+                    _buildPdfTool(context, ref, Icons.low_priority_rounded, 'Rearrange', const Color(0xFF10B981)),
+                    _buildPdfTool(context, ref, Icons.image_rounded, 'Images to PDF', const Color(0xFFEC4899)),
+                    _buildPdfTool(context, ref, Icons.merge_type_rounded, 'Merge', const Color(0xFF8B5CF6)),
+                    _buildPdfTool(context, ref, Icons.call_split_rounded, 'Split', const Color(0xFFEAB308)),
+                    _buildPdfTool(context, ref, Icons.lock_outline_rounded, 'Password', const Color(0xFFEF4444)),
+                    _buildPdfTool(context, ref, Icons.lock_open_rounded, 'Unlock PDF', const Color(0xFF14B8A6)),
+                    _buildPdfTool(context, ref, Icons.branding_watermark_rounded, 'Watermark', const Color(0xFF06B6D4)),
+                    _buildPdfTool(context, ref, Icons.document_scanner_rounded, 'OCR Extract', const Color(0xFF3B82F6)),
+                    _buildPdfTool(context, ref, Icons.contact_page_rounded, 'Resume', const Color(0xFFF59E0B)),
+                    _buildPdfTool(context, ref, Icons.fact_check_rounded, 'ATS Check', const Color(0xFF6366F1)),
+                    _buildPdfTool(context, ref, Icons.mark_email_read_rounded, 'Cover Letter', const Color(0xFFEC4899)),
+                    _buildPdfTool(context, ref, Icons.compress_rounded, 'Compress PDF', const Color(0xFFF87171)),
+                    _buildPdfTool(context, ref, Icons.image_rounded, 'PDF to Image', const Color(0xFF4ADE80)),
+                    _buildPdfTool(context, ref, Icons.description_rounded, 'Word to PDF', const Color(0xFF60A5FA)),
+                    _buildPdfTool(context, ref, Icons.picture_as_pdf_rounded, 'PDF to Word', const Color(0xFF34D399)),
+                    _buildPdfTool(context, ref, Icons.table_chart_rounded, 'Excel to PDF', const Color(0xFFFBBF24)),
+                    _buildPdfTool(context, ref, Icons.grid_on_rounded, 'PDF to Excel', const Color(0xFF2DD4BF)),
+                    _buildPdfTool(context, ref, Icons.slideshow_rounded, 'PPT to PDF', const Color(0xFFF472B6)),
+                    _buildPdfTool(context, ref, Icons.co_present_rounded, 'PDF to PPT', const Color(0xFF818CF8)),
+                    _buildPdfTool(context, ref, Icons.table_view_rounded, 'Excel to CSV', const Color(0xFF4ADE80)),
+                    _buildPdfTool(context, ref, Icons.pivot_table_chart_rounded, 'CSV to Excel', const Color(0xFF34D399)),
+                    _buildPdfTool(context, ref, Icons.picture_as_pdf_rounded, 'CSV to PDF', const Color(0xFFF87171)),
+                    _buildPdfTool(context, ref, Icons.badge_rounded, 'ID Card Gen', const Color(0xFFA78BFA)),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 24),
-              const Text(
-                'Recent Documents',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF111827),
+                
+                const SizedBox(height: 32),
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Folders',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.create_new_folder, color: Colors.black),
+                      onPressed: () => _showCreateFolderDialog(context, ref),
+                    )
+                  ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              recentDocsAsync.when(
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 56,
+                  child: allFoldersAsync.when(
+                    data: (folders) {
+                      if (folders.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No folders yet.',
+                            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold),
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: folders.length,
+                        itemBuilder: (context, index) {
+                          final folder = folders[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FolderDocumentsScreen(folder: folder),
+                                ),
+                              );
+                            },
+                            onLongPress: () {
+                              _showDeleteFolderDialog(context, ref, folder);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 16, bottom: 4), // bottom margin for shadow
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF59E0B),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.black, width: 3),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black,
+                                    offset: Offset(3, 3),
+                                    blurRadius: 0,
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.folder_rounded, color: Colors.black, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    folder.name, 
+                                    style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, st) => const Center(child: Text('Error loading folders')),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+                const Text(
+                  'Recent Documents',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                recentDocsAsync.when(
                   data: (docs) {
                     if (docs.isEmpty) {
                       return Padding(
@@ -503,7 +623,8 @@ class DocuForgeHomeScreen extends ConsumerWidget {
                             'No documents yet.\nScan a document to get started.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
@@ -518,19 +639,19 @@ class DocuForgeHomeScreen extends ConsumerWidget {
                         final doc = docs[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => PdfViewerScreen(document: doc)));
+                            context.push('/pdf-viewer', extra: doc);
                           },
                           child: Container(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: 16),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: const Color(0xFF111827), width: 2),
+                              border: Border.all(color: Colors.black, width: 3),
                               boxShadow: const [
                                 BoxShadow(
-                                  color: Color(0xFF111827),
-                                  offset: Offset(2, 2),
+                                  color: Colors.black,
+                                  offset: Offset(4, 4),
                                   blurRadius: 0,
                                 )
                               ],
@@ -541,8 +662,9 @@ class DocuForgeHomeScreen extends ConsumerWidget {
                                   width: 60,
                                   height: 80,
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(8),
+                                    color: const Color(0xFFF1F5F9),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.black, width: 2),
                                     image: doc.thumbnailPath.isNotEmpty
                                         ? DecorationImage(
                                             image: FileImage(File(doc.thumbnailPath)),
@@ -551,7 +673,7 @@ class DocuForgeHomeScreen extends ConsumerWidget {
                                         : null,
                                   ),
                                   child: doc.thumbnailPath.isEmpty
-                                      ? const Icon(Icons.picture_as_pdf, color: Colors.red, size: 30)
+                                      ? const Icon(Icons.picture_as_pdf_rounded, color: Colors.black, size: 30)
                                       : null,
                                 ),
                                 const SizedBox(width: 16),
@@ -561,20 +683,28 @@ class DocuForgeHomeScreen extends ConsumerWidget {
                                     children: [
                                       Text(
                                         doc.name,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w900, 
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 6),
                                       Text(
                                         '${doc.pageCount} pages • ${DateFormat.yMMMd().format(doc.createdAt)}',
-                                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                        style: const TextStyle(
+                                          color: Colors.black87, 
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.more_vert),
+                                  icon: const Icon(Icons.more_vert_rounded, color: Colors.black),
                                   onPressed: () => _showDocumentOptions(context, ref, doc),
                                 ),
                               ],
@@ -584,15 +714,15 @@ class DocuForgeHomeScreen extends ConsumerWidget {
                       },
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => const Center(child: CircularProgressIndicator(color: Colors.black)),
                   error: (e, st) => const Center(child: Text('Error loading documents')),
-                ), // closes recentDocsAsync.when
-              ], // closes children
-            ), // closes Column
-          ), // closes Padding
-        ), // closes SingleChildScrollView
-      ), // closes SafeArea
-    ); // closes Scaffold
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _handlePdfToolAction(BuildContext context, WidgetRef ref, String action) async {
@@ -617,7 +747,7 @@ class DocuForgeHomeScreen extends ConsumerWidget {
         await DocuForgeDatabaseService.instance.saveDocument(tempDoc);
 
         if (context.mounted) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => PdfViewerScreen(document: tempDoc))).then((_) {
+          context.push('/pdf-viewer', extra: tempDoc).then((_) {
             ref.invalidate(recentDocumentsProvider);
           });
         }
@@ -652,7 +782,7 @@ class DocuForgeHomeScreen extends ConsumerWidget {
       }
 
       if (action == 'Images to PDF') {
-        final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const ImagesToPdfScreen()));
+        final result = await context.push<bool>('/images-to-pdf');
         if (result == true) ref.invalidate(recentDocumentsProvider);
         return;
       }
@@ -665,6 +795,21 @@ class DocuForgeHomeScreen extends ConsumerWidget {
 
       if (action == 'OCR Extract') {
         Navigator.push(context, MaterialPageRoute(builder: (_) => const OcrExtractScreen()));
+        return;
+      }
+
+      if (action == 'Resume') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ResumeBuilderFormScreen()));
+        return;
+      }
+      
+      if (action == 'ATS Check') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ATSCheckerScreen()));
+        return;
+      }
+      
+      if (action == 'Cover Letter') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const CoverLetterFormScreen()));
         return;
       }
 
@@ -692,32 +837,152 @@ class DocuForgeHomeScreen extends ConsumerWidget {
         return;
       }
 
+      if (action == 'ID Card Gen') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const IdCardGeneratorScreen()));
+        return;
+      }
+
+      if (action == 'Compress PDF') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfCompressorScreen()));
+        return;
+      }
+
+      if (action == 'PDF to Image') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const PdfToImageScreen()));
+        return;
+      }
+
+      if (action == 'Word to PDF') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'Word to PDF',
+          endpoint: '/docuforge/word-to-pdf',
+          allowedExtensions: const ['doc', 'docx'],
+          outputExtension: 'pdf',
+        )));
+        return;
+      }
+
+      if (action == 'PDF to Word') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'PDF to Word',
+          endpoint: '/docuforge/pdf-to-word',
+          allowedExtensions: const ['pdf'],
+          outputExtension: 'docx',
+        )));
+        return;
+      }
+
+      if (action == 'Excel to PDF') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'Excel to PDF',
+          endpoint: '/docuforge/excel-to-pdf',
+          allowedExtensions: const ['xls', 'xlsx'],
+          outputExtension: 'pdf',
+        )));
+        return;
+      }
+
+      if (action == 'PDF to Excel') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'PDF to Excel',
+          endpoint: '/docuforge/pdf-to-excel',
+          allowedExtensions: const ['pdf'],
+          outputExtension: 'xlsx',
+        )));
+        return;
+      }
+
+      if (action == 'PPT to PDF') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'PPT to PDF',
+          endpoint: '/docuforge/ppt-to-pdf',
+          allowedExtensions: const ['ppt', 'pptx'],
+          outputExtension: 'pdf',
+        )));
+        return;
+      }
+
+      if (action == 'PDF to PPT') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'PDF to PPT',
+          endpoint: '/docuforge/pdf-to-ppt',
+          allowedExtensions: const ['pdf'],
+          outputExtension: 'pptx',
+        )));
+        return;
+      }
+
+      if (action == 'Excel to CSV') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'Excel to CSV',
+          endpoint: '/docuforge/excel-to-csv',
+          allowedExtensions: const ['xls', 'xlsx'],
+          outputExtension: 'csv',
+        )));
+        return;
+      }
+
+      if (action == 'CSV to Excel') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'CSV to Excel',
+          endpoint: '/docuforge/csv-to-excel',
+          allowedExtensions: const ['csv'],
+          outputExtension: 'xlsx',
+        )));
+        return;
+      }
+
+      if (action == 'CSV to PDF') {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => PdfConverterScreen(
+          title: 'CSV to PDF',
+          endpoint: '/docuforge/csv-to-pdf',
+          allowedExtensions: const ['csv'],
+          outputExtension: 'pdf',
+        )));
+        return;
+      }
+
+      // Show coming soon for tools that don't have dedicated screens yet
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$action is coming soon!')));
+      }
 
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
-  Widget _buildPdfTool(BuildContext context, WidgetRef ref, IconData icon, String label, Color color) {
+  Widget _buildPdfTool(BuildContext context, WidgetRef ref, IconData icon, String label, Color bgColor) {
     return GestureDetector(
       onTap: () => _handlePdfToolAction(context, ref, label),
       child: Container(
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 4, right: 4), // margin for shadow
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: bgColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color, width: 2),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(4, 4),
+              blurRadius: 0,
+            )
+          ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 30),
+            Icon(icon, color: Colors.black, size: 28),
             const SizedBox(height: 8),
             Text(
               label,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.bold,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
               ),
             ),
           ],

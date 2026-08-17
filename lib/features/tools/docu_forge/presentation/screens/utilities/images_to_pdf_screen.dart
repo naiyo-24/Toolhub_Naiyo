@@ -1,9 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/pdf_utils_service.dart';
 import '../../../data/docuforge_database_service.dart';
 import '../../../data/models/document_model.dart';
+import '../pdf_viewer_screen.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:tool_hub/core/widgets/neo_card.dart';
+import 'package:go_router/go_router.dart';
 
 class ImagesToPdfScreen extends StatefulWidget {
   const ImagesToPdfScreen({super.key});
@@ -16,6 +22,7 @@ class _ImagesToPdfScreenState extends State<ImagesToPdfScreen> {
   final ImagePicker _picker = ImagePicker();
   List<File> _selectedImages = [];
   bool _isProcessing = false;
+  Document? _generatedDoc;
 
   Future<void> _addImages() async {
     final List<XFile> images = await _picker.pickMultiImage(
@@ -59,8 +66,10 @@ class _ImagesToPdfScreenState extends State<ImagesToPdfScreen> {
 
         await DocuForgeDatabaseService.instance.saveDocument(newDoc);
         if (mounted) {
+          setState(() {
+            _generatedDoc = newDoc;
+          });
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully created PDF from images!')));
-          Navigator.pop(context, true); // true to indicate success
         }
       } else {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to convert images')));
@@ -75,14 +84,20 @@ class _ImagesToPdfScreenState extends State<ImagesToPdfScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFEC4899),
-        title: const Text('Images to PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Stack(
-        children: [
+        backgroundColor: const Color(0xFFF8FAFC),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFEC4899),
+          title: const Text('Images to PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          iconTheme: const IconThemeData(color: Colors.white),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: _generatedDoc != null
+        ? _buildSuccessView()
+        : Stack(
+            children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -220,6 +235,113 @@ class _ImagesToPdfScreenState extends State<ImagesToPdfScreen> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuccessView() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 40),
+          NeoCard(
+            backgroundColor: const Color(0xFF4ADE80),
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              children: [
+                const Icon(Icons.check_circle_rounded, size: 80, color: Colors.white),
+                const SizedBox(height: 24),
+                const Text(
+                  'PDF Created Successfully!',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _generatedDoc!.name,
+                  style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => PdfViewerScreen(document: _generatedDoc!)));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 2),
+              ),
+            ),
+            icon: const Icon(Icons.preview_rounded),
+            label: const Text('Preview PDF', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () {
+              // ignore: deprecated_member_use
+              Share.shareXFiles([XFile(_generatedDoc!.pdfPath)], text: 'My Generated PDF');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF3B82F6),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 2),
+              ),
+            ),
+            icon: const Icon(Icons.share_rounded),
+            label: const Text('Share PDF', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () async {
+              try {
+                final file = File(_generatedDoc!.pdfPath);
+                final bytes = await file.readAsBytes();
+                final String? outputPath = await FilePicker.platform.saveFile(
+                  dialogTitle: 'Save PDF',
+                  fileName: _generatedDoc!.name,
+                  type: FileType.custom,
+                  allowedExtensions: ['pdf'],
+                  bytes: bytes,
+                );
+                if (outputPath != null && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved successfully!')));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error saving: $e')));
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF59E0B),
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 2),
+              ),
+            ),
+            icon: const Icon(Icons.download_rounded),
+            label: const Text('Save Local', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+          const SizedBox(height: 32),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Back to Tools', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)),
+          )
         ],
       ),
     );

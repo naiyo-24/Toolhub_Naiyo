@@ -6,6 +6,9 @@ import 'package:file_picker/file_picker.dart';
 import '../../../data/pdf_utils_service.dart';
 import '../../../data/docuforge_database_service.dart';
 import '../../../data/models/document_model.dart';
+import 'package:share_plus/share_plus.dart';
+import '../pdf_viewer_screen.dart';
+import 'package:tool_hub/core/widgets/neo_card.dart';
 
 class SplitPdfScreen extends StatefulWidget {
   const SplitPdfScreen({super.key});
@@ -31,6 +34,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
   bool _isLoading = false;
   bool _isProcessing = false;
   List<_PdfPageSelection> _pages = [];
+  Document? _generatedDoc;
 
   Future<void> _selectFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -109,7 +113,9 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
         await DocuForgeDatabaseService.instance.saveDocument(newDoc);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully extracted pages!')));
-          Navigator.pop(context, true);
+          setState(() {
+            _generatedDoc = newDoc;
+          });
         }
       }
     } catch (e) {
@@ -145,7 +151,9 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
             ),
         ],
       ),
-      body: Stack(
+      body: _generatedDoc != null
+        ? _buildSuccessView()
+        : Stack(
         children: [
           Column(
             children: [
@@ -304,6 +312,113 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuccessView() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 40),
+          NeoCard(
+            backgroundColor: const Color(0xFF4ADE80),
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              children: [
+                const Icon(Icons.check_circle_rounded, size: 80, color: Colors.white),
+                const SizedBox(height: 24),
+                const Text(
+                  'PDF Split Successfully!',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _generatedDoc!.name,
+                  style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => PdfViewerScreen(document: _generatedDoc!)));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 2),
+              ),
+            ),
+            icon: const Icon(Icons.preview_rounded),
+            label: const Text('Preview PDF', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () {
+              // ignore: deprecated_member_use
+              Share.shareXFiles([XFile(_generatedDoc!.pdfPath)], text: 'My Split PDF');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF3B82F6),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 2),
+              ),
+            ),
+            icon: const Icon(Icons.share_rounded),
+            label: const Text('Share PDF', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () async {
+              try {
+                final file = File(_generatedDoc!.pdfPath);
+                final bytes = await file.readAsBytes();
+                final String? outputPath = await FilePicker.platform.saveFile(
+                  dialogTitle: 'Save PDF',
+                  fileName: _generatedDoc!.name,
+                  type: FileType.custom,
+                  allowedExtensions: ['pdf'],
+                  bytes: bytes,
+                );
+                if (outputPath != null && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved successfully!')));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error saving: $e')));
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF59E0B),
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 2),
+              ),
+            ),
+            icon: const Icon(Icons.download_rounded),
+            label: const Text('Save Local', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ),
+          const SizedBox(height: 32),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Back to Tools', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)),
+          )
         ],
       ),
     );

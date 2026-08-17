@@ -5,9 +5,13 @@ import '../../data/models/document_model.dart';
 import '../../data/google_drive_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:tool_hub/core/utils/permission_disclosure_utils.dart';
 import '../../data/pdf_utils_service.dart';
 import 'package:tool_hub/features/tools/docu_forge/data/docuforge_database_service.dart';
+import 'package:tool_hub/features/tools/docu_forge/data/docuforge_database_service.dart';
 import 'pdf_editor_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class PdfViewerScreen extends StatefulWidget {
   final Document document;
@@ -51,6 +55,18 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   Key _pdfKey = UniqueKey();
 
   Future<void> _appendPage(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      final hasPermission = await PermissionDisclosureUtils.requestWithDisclosure(
+        context,
+        permission: Permission.camera,
+        title: 'Camera Access Needed',
+        description: 'ToolHub requires camera access so you can capture new pages to add to your PDF document.',
+        icon: Icons.camera_alt,
+        color: Colors.blue,
+      );
+      if (!hasPermission) return;
+    }
+
     final XFile? image = await _picker.pickImage(
       source: source,
       maxWidth: 1920,
@@ -117,15 +133,19 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF2563EB),
-        title: Text(
-          widget.document.name,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
+        backgroundColor: const Color(0xFFF8FAFC),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF2563EB),
+          title: Text(
+            widget.document.name,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+          actions: [
           IconButton(
             icon: const Icon(Icons.edit_document),
             onPressed: () async {

@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:tool_hub/core/theme/app_colors.dart';
 import 'package:tool_hub/core/theme/app_text_styles.dart';
 import 'package:tool_hub/core/widgets/neo_card.dart';
+import 'package:tool_hub/features/tools/docu_forge/presentation/screens/pdf_viewer_screen.dart';
+import 'package:tool_hub/features/tools/docu_forge/data/models/document_model.dart';
 import '../providers/file_tools_providers.dart';
 
 class PdfCompressorScreen extends ConsumerStatefulWidget {
@@ -169,7 +171,21 @@ class _PdfCompressorScreenState extends ConsumerState<PdfCompressorScreen> {
 
   void _openFile() {
     if (_savedFilePath == null) return;
-    OpenFilex.open(_savedFilePath!);
+    
+    final doc = Document()
+      ..name = _savedFilePath!.split('/').last
+      ..pdfPath = _savedFilePath!
+      ..fileSize = File(_savedFilePath!).lengthSync()
+      ..createdAt = DateTime.now()
+      ..updatedAt = DateTime.now()
+      ..pageCount = 1
+      ..thumbnailPath = ''
+      ..folderId = '';
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PdfViewerScreen(document: doc)),
+    );
   }
 
   @override

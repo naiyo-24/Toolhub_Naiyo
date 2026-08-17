@@ -8,6 +8,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:tool_hub/core/utils/permission_disclosure_utils.dart';
 import 'package:tool_hub/core/api/api_config.dart';
 
 class PdfSignatureScreen extends StatefulWidget {
@@ -168,6 +170,16 @@ class _PdfSignatureScreenState extends State<PdfSignatureScreen> {
               title: const Text('Take Photo'),
               onTap: () async {
                 Navigator.pop(context);
+                final hasPermission = await PermissionDisclosureUtils.requestWithDisclosure(
+                  context,
+                  permission: Permission.camera,
+                  title: 'Camera Access Needed',
+                  description: 'ToolHub requires camera access so you can take a picture of your physical signature to digitize it.',
+                  icon: Icons.camera_alt,
+                  color: Colors.blue,
+                );
+                if (!hasPermission) return;
+
                 final ImagePicker picker = ImagePicker();
                 final XFile? image = await picker.pickImage(source: ImageSource.camera);
                 if (image != null) {

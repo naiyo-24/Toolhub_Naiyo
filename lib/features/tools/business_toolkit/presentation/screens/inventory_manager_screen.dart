@@ -9,6 +9,8 @@ import 'package:tool_hub/core/utils/snackbar_utils.dart';
 import 'package:tool_hub/features/tools/business_toolkit/data/business_service.dart';
 import 'package:tool_hub/features/tools/business_toolkit/presentation/screens/inventory_scanner_screen.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:tool_hub/core/utils/permission_disclosure_utils.dart';
 import 'dart:io';
 import 'dart:math';
 
@@ -313,6 +315,18 @@ class _InventoryManagerScreenState
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      final hasPermission = await PermissionDisclosureUtils.requestWithDisclosure(
+        context,
+        permission: Permission.camera,
+        title: 'Camera Access Needed',
+        description: 'ToolHub requires camera access so you can take a picture of your inventory items.',
+        icon: Icons.camera_alt,
+        color: Colors.blue,
+      );
+      if (!hasPermission) return;
+    }
+
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {

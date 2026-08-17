@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tool_hub/core/utils/permission_disclosure_utils.dart';
 import '../../data/local_storage_service.dart';
 import 'preview_enhance_screen.dart';
 
@@ -22,12 +23,22 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   void initState() {
     super.initState();
-    _initCamera();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initCamera();
+    });
   }
 
   Future<void> _initCamera() async {
-    final status = await Permission.camera.request();
-    if (status.isGranted) {
+    final hasPermission = await PermissionDisclosureUtils.requestWithDisclosure(
+      context,
+      permission: Permission.camera,
+      title: 'Camera Access Needed',
+      description: 'ToolHub requires camera access so you can scan physical documents and convert them into PDFs. This data is only used locally.',
+      icon: Icons.camera_alt,
+      color: Colors.blue,
+    );
+    
+    if (hasPermission) {
       _cameras = await availableCameras();
       if (_cameras.isNotEmpty) {
         _controller = CameraController(
@@ -41,6 +52,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
             _isReady = true;
           });
         }
+      }
+    } else {
+      if (mounted) {
+        Navigator.pop(context);
       }
     }
   }
