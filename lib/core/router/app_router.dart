@@ -121,6 +121,21 @@ import '../../features/tools/file_sharing/presentation/screens/duplicate_finder_
 import '../../features/tools/file_sharing/presentation/screens/storage_analyzer_screen.dart';
 import '../../features/tools/file_sharing/presentation/screens/file_share_screen.dart';
 import '../../features/tools/file_sharing/presentation/screens/file_rename_screen.dart';
+import '../../features/loandesk/presentation/screens/login/loandesk_login_screen.dart';
+import '../../features/loandesk/presentation/screens/onboarding/onboarding_wizard_screen.dart';
+import '../../features/loandesk/presentation/screens/main/loandesk_main_screen.dart';
+import '../../features/loandesk/presentation/screens/customers/customer_list_screen.dart';
+import '../../features/loandesk/presentation/screens/customers/add_customer_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/case_list_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/create_loan_case_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/case_workspace_screen.dart';
+import '../../features/loandesk/presentation/screens/documents/document_scanner_screen.dart';
+import '../../features/loandesk/presentation/screens/documents/document_vault_screen.dart';
+import '../../features/loandesk/presentation/screens/documents/ocr_review_screen.dart';
+import '../../features/loandesk/presentation/screens/analysis/bank_statement_analyzer_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/cam_report_preview_screen.dart';
+import '../../features/loandesk/presentation/screens/profile/loandesk_profile_screen.dart';
+
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -659,6 +674,85 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
       GoRoute(
         path: '/about',
         builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/login',
+        builder: (context, state) => const LoanDeskLoginScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/onboarding',
+        builder: (context, state) => const OnboardingWizardScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/dashboard',
+        builder: (context, state) => const LoanDeskMainScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/customers',
+        builder: (context, state) => const CustomerListScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/customers/add',
+        builder: (context, state) => const AddCustomerScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/cases',
+        builder: (context, state) => const CaseListScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/cases/create',
+        builder: (context, state) => const CreateLoanCaseScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/cases/workspace/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CaseWorkspaceScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/scanner',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DocumentScannerScreen(
+            caseId: extra['caseId'] as String,
+            docId: extra['docId'] as String,
+            docName: extra['docName'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/cases/vault/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DocumentVaultScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/scanner/ocr',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return OcrReviewScreen(
+            caseId: extra['caseId'] as String,
+            docId: extra['docId'] as String,
+            docName: extra['docName'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/analysis/bank-statement',
+        builder: (context, state) => const BankStatementAnalyzerScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/cases/cam/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CamReportPreviewScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/profile',
+        builder: (context, state) => const LoanDeskProfileScreen(),
       ),
     ],
   );

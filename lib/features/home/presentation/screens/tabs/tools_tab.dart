@@ -43,7 +43,7 @@ class _ToolsTabState extends ConsumerState<ToolsTab> {
       if (selectedCategory == 'Utilities') {
         return title.contains('Utility') || title.contains('Internet') || title.contains('File') || title.contains('AI');
       } else if (selectedCategory == 'Business') {
-        return title.contains('Finance') || title.contains('Business') || title.contains('DocuForge') || title.contains('Form');
+        return title.contains('Finance') || title.contains('Business') || title.contains('DocuForge') || title.contains('Form') || title.contains('LoanDesk');
       } else if (selectedCategory == 'Lifestyle') {
         return title.contains('Health') || title.contains('Social') || title.contains('Travel');
       } else if (selectedCategory == 'Productivity') {
@@ -126,6 +126,8 @@ class _ToolsTabState extends ConsumerState<ToolsTab> {
                           context.push('/travel-tools');
                         } else if (t.contains('Form')) {
                           context.push('/form-builder');
+                        } else if (t.contains('LoanDesk')) {
+                          context.push('/loandesk/login');
                         } else {
                           widget.onShowComingSoon();
                         }

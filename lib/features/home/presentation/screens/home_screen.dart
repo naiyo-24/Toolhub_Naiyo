@@ -43,6 +43,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     {'title': 'Productivity', 'subtitle': 'Get things done', 'color': const Color(0xFFFFEBD9), 'icon': Icons.access_time_filled_rounded, 'iconColor': const Color(0xFFFF9800)},
     {'title': 'Travel\nTools', 'subtitle': 'Explore the world', 'color': const Color(0xFFD9F2FF), 'icon': Icons.flight_takeoff_rounded, 'iconColor': const Color(0xFF00B0FF)},
     {'title': 'Form\nBuilder', 'subtitle': 'Custom forms', 'color': const Color(0xFFF2D9FF), 'icon': Icons.dynamic_form_rounded, 'iconColor': const Color(0xFFD500F9)},
+    {'title': 'LoanDesk', 'subtitle': 'Banker Workspace', 'color': const Color(0xFFFFD166), 'icon': Icons.account_balance, 'iconColor': const Color(0xFF000000)},
   ];
 
   late List<Map<String, dynamic>> _randomTopTools;
@@ -701,6 +702,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     context.push('/travel-tools');
                   } else if (t.contains('Form')) {
                     context.push('/form-builder');
+                  } else if (t.contains('LoanDesk')) {
+                    context.push('/loandesk/login');
                   } else {
                     _showComingSoon();
                   }
