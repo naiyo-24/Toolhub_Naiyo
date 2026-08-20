@@ -8,7 +8,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'core/router/app_router.dart';
-import 'core/config/app_config.dart';
+import 'core/api/api_config.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tool_hub/core/widgets/network_overlay.dart';
@@ -114,7 +114,7 @@ class _ToolHubAppState extends ConsumerState<ToolHubApp> {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp.router(
-      title: AppConfig.appName,
+      title: ApiConfig.appName,
       debugShowCheckedModeBanner: false,
       routerConfig: createAppRouter(widget.hasSeenOnboarding, widget.launchedFromNotification),
       theme: AppTheme.lightTheme,

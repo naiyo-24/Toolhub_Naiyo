@@ -46,8 +46,8 @@ class CaseOverviewTab extends StatelessWidget {
           NeoButton(
             text: 'GENERATE CAM REPORT',
             isFullWidth: true,
-            color: LoanDeskTheme.primaryBlack,
-            textColor: LoanDeskTheme.primaryWhite,
+            color: LoanDeskTheme.primaryPink,
+            textColor: LoanDeskTheme.primaryBlack,
             onPressed: () {
               context.push('/loandesk/cases/cam/${loanCase.id}');
             },

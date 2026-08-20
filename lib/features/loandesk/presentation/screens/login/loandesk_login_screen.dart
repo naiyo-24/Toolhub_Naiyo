@@ -90,150 +90,161 @@ class LoanDeskLoginScreen extends ConsumerWidget {
 
           // Main Content
           SafeArea(
-            child: Column(
-              children: [
-                // Neo-Brutalist Back Button
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: InkWell(
-                      onTap: () => context.pop(),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: LoanDeskTheme.primaryWhite,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: LoanDeskTheme.primaryBlack, width: 3),
-                          boxShadow: const [BoxShadow(color: LoanDeskTheme.primaryBlack, offset: Offset(3, 3))],
-                        ),
-                        child: const Icon(Icons.arrow_back, color: LoanDeskTheme.primaryBlack, size: 24),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          // Neo-Brutalist Back Button
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: InkWell(
+                                onTap: () => context.pop(),
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: LoanDeskTheme.primaryWhite,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: LoanDeskTheme.primaryBlack, width: 3),
+                                    boxShadow: const [BoxShadow(color: LoanDeskTheme.primaryBlack, offset: Offset(3, 3))],
+                                  ),
+                                  child: const Icon(Icons.arrow_back, color: LoanDeskTheme.primaryBlack, size: 24),
+                                ),
+                              ),
+                            ),
+                          ),
+                          
+                          const Spacer(),
+                          
+                          // Pure Neo-Brutalism Card
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            child: NeoCard(
+                              backgroundColor: LoanDeskTheme.primaryWhite,
+                              padding: const EdgeInsets.all(32),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Icon Badge
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: LoanDeskTheme.primaryBlue,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(color: LoanDeskTheme.primaryBlack, width: 3),
+                                      boxShadow: const [
+                                        BoxShadow(color: LoanDeskTheme.primaryBlack, offset: Offset(4, 4)),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.account_balance_rounded,
+                                      size: 48,
+                                      color: LoanDeskTheme.primaryWhite,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  
+                                  // Typography
+                                  const Text(
+                                    'LOAN DESK',
+                                    style: TextStyle(
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.w900,
+                                      color: LoanDeskTheme.primaryBlack,
+                                      letterSpacing: -1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: LoanDeskTheme.primaryPink,
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
+                                    ),
+                                    child: const Text(
+                                      'BANKER WORKSPACE',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w900,
+                                        color: LoanDeskTheme.primaryWhite,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
+                                  
+                                  const Text(
+                                    'Secure access to your professional loan processing environment.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black87,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                  
+                                  const SizedBox(height: 32),
+                                  
+                                  // Auth Error
+                                  if (authState.error != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 16.0),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: LoanDeskTheme.primaryRed,
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
+                                        ),
+                                        child: Text(
+                                          authState.error!,
+                                          style: const TextStyle(
+                                            color: LoanDeskTheme.primaryWhite,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  
+                                  // Google Login Button
+                                  if (authState.isLoading)
+                                    const Center(
+                                      child: CircularProgressIndicator(
+                                        color: LoanDeskTheme.primaryBlack,
+                                        strokeWidth: 4,
+                                      ),
+                                    )
+                                  else
+                                    NeoButton(
+                                      text: 'CONTINUE WITH GOOGLE',
+                                      isFullWidth: true,
+                                      color: LoanDeskTheme.primaryYellow,
+                                      imageAsset: 'assets/logos/google_logo.png',
+                                      onPressed: () {
+                                        ref.read(authProvider.notifier).signInWithGoogle();
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          
+                          const Spacer(flex: 2),
+                        ],
                       ),
                     ),
                   ),
-                ),
-                
-                const Spacer(),
-                
-                // Pure Neo-Brutalism Card
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: NeoCard(
-                    backgroundColor: LoanDeskTheme.primaryWhite,
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Icon Badge
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: LoanDeskTheme.primaryBlue,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: LoanDeskTheme.primaryBlack, width: 3),
-                            boxShadow: const [
-                              BoxShadow(color: LoanDeskTheme.primaryBlack, offset: Offset(4, 4)),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.account_balance_rounded,
-                            size: 48,
-                            color: LoanDeskTheme.primaryWhite,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        
-                        // Typography
-                        const Text(
-                          'LOAN DESK',
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w900,
-                            color: LoanDeskTheme.primaryBlack,
-                            letterSpacing: -1,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: LoanDeskTheme.primaryPink,
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
-                          ),
-                          child: const Text(
-                            'BANKER WORKSPACE',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w900,
-                              color: LoanDeskTheme.primaryWhite,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        
-                        const Text(
-                          'Secure access to your professional loan processing environment.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                            height: 1.4,
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 32),
-                        
-                        // Auth Error
-                        if (authState.error != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: LoanDeskTheme.primaryRed,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
-                              ),
-                              child: Text(
-                                authState.error!,
-                                style: const TextStyle(
-                                  color: LoanDeskTheme.primaryWhite,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        
-                        // Google Login Button
-                        if (authState.isLoading)
-                          const Center(
-                            child: CircularProgressIndicator(
-                              color: LoanDeskTheme.primaryBlack,
-                              strokeWidth: 4,
-                            ),
-                          )
-                        else
-                          NeoButton(
-                            text: 'CONTINUE WITH GOOGLE',
-                            isFullWidth: true,
-                            color: LoanDeskTheme.primaryYellow,
-                            imageAsset: 'assets/logos/google_logo.png',
-                            onPressed: () {
-                              ref.read(authProvider.notifier).signInWithGoogle();
-                            },
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                const Spacer(flex: 2),
-              ],
+                );
+              },
             ),
           ),
         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../domain/entities/loan_case.dart';
 import '../../../theme/loandesk_theme.dart';
 import '../../../widgets/neo_card.dart';
+import '../reports/case_summary_pdf_screen.dart';
 
 class CaseAnalysisTab extends StatelessWidget {
   final LoanCase loanCase;
@@ -15,6 +16,31 @@ class CaseAnalysisTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // PDF Generation Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CaseSummaryPdfScreen(loanCase: loanCase),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
+              label: const Text('GENERATE CAM REPORT (PDF)', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: LoanDeskTheme.primaryBlack,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius - LoanDeskTheme.borderWidth),
+                ),
+                elevation: LoanDeskTheme.shadowOffset,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
           const Text(
             'Financial Overview',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),

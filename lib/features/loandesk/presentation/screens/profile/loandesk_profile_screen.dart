@@ -63,7 +63,9 @@ class LoanDeskProfileScreen extends ConsumerWidget {
                   backgroundImage: user?.profilePhoto != null ? NetworkImage(user!.profilePhoto!) : null,
                   child: user?.profilePhoto == null
                       ? Text(
-                          user?.name?.substring(0, 1).toUpperCase() ?? 'B',
+                          (user?.fullName != null && user!.fullName.isNotEmpty) 
+                              ? user.fullName.substring(0, 1).toUpperCase() 
+                              : 'B',
                           style: const TextStyle(
                             color: LoanDeskTheme.primaryBlack,
                             fontWeight: FontWeight.w900,
@@ -75,7 +77,9 @@ class LoanDeskProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                user?.name ?? 'Banker Name',
+                (user?.fullName != null && user!.fullName.isNotEmpty) 
+                    ? user.fullName 
+                    : 'Banker Name',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
@@ -84,7 +88,9 @@ class LoanDeskProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                user?.email ?? 'banker@loandesk.app',
+                (user?.email != null && user!.email.isNotEmpty) 
+                    ? user.email 
+                    : 'banker@loandesk.app',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -96,11 +102,19 @@ class LoanDeskProfileScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    _buildInfoRow(Icons.badge, 'Employee ID', 'LD-${user?.id?.substring(0, 5).toUpperCase() ?? '8942'}'),
+                    _buildInfoRow(Icons.badge, 'Employee ID', user?.employeeId ?? 'N/A'),
                     const Divider(height: 32, thickness: 1, color: Colors.black12),
-                    _buildInfoRow(Icons.account_balance, 'Branch', 'Main Branch, City Center'),
+                    _buildInfoRow(Icons.account_balance, 'Organization', user?.orgName ?? 'N/A'),
                     const Divider(height: 32, thickness: 1, color: Colors.black12),
-                    _buildInfoRow(Icons.work, 'Role', 'Senior Credit Officer'),
+                    _buildInfoRow(Icons.location_on, 'Branch', '${user?.branchName ?? 'N/A'}, ${user?.city ?? 'N/A'}'),
+                    const Divider(height: 32, thickness: 1, color: Colors.black12),
+                    _buildInfoRow(Icons.work, 'Role', user?.loandeskRole ?? 'N/A'),
+                    const Divider(height: 32, thickness: 1, color: Colors.black12),
+                    _buildInfoRow(Icons.assignment_ind, 'Designation', user?.designation ?? 'N/A'),
+                    const Divider(height: 32, thickness: 1, color: Colors.black12),
+                    _buildInfoRow(Icons.phone, 'Mobile', user?.mobileNumber ?? 'N/A'),
+                    const Divider(height: 32, thickness: 1, color: Colors.black12),
+                    _buildInfoRow(Icons.history, 'Experience', '${user?.experienceYears ?? 0} Years'),
                   ],
                 ),
               ),
@@ -111,8 +125,40 @@ class LoanDeskProfileScreen extends ConsumerWidget {
                 color: LoanDeskTheme.primaryPink,
                 textColor: LoanDeskTheme.primaryBlack,
                 onPressed: () {
-                  ref.read(authProvider.notifier).signOut();
-                  context.go('/onboarding');
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext dialogContext) {
+                      return AlertDialog(
+                        backgroundColor: LoanDeskTheme.primaryWhite,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius),
+                          side: const BorderSide(color: LoanDeskTheme.primaryBlack, width: LoanDeskTheme.borderWidth),
+                        ),
+                        title: const Text(
+                          'Sign Out',
+                          style: TextStyle(fontWeight: FontWeight.w900, color: LoanDeskTheme.primaryBlack),
+                        ),
+                        content: const Text(
+                          'Are you sure you want to sign out?',
+                          style: TextStyle(fontWeight: FontWeight.w600, color: LoanDeskTheme.primaryBlack),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: const Text('CANCEL', style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w800)),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(dialogContext);
+                              ref.read(authProvider.notifier).signOut();
+                              context.go('/');
+                            },
+                            child: const Text('SIGN OUT', style: TextStyle(color: LoanDeskTheme.primaryRed, fontWeight: FontWeight.w900)),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
               ),
             ],

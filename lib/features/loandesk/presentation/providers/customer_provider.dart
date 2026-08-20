@@ -1,44 +1,50 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tool_hub/features/loandesk/data/repositories/customer_repository.dart';
 import '../../domain/entities/customer.dart';
 
-final customerProvider = StateNotifierProvider<CustomerNotifier, List<Customer>>((ref) {
-  return CustomerNotifier();
+final customerProvider = StateNotifierProvider<CustomerNotifier, AsyncValue<List<Customer>>>((ref) {
+  final customerRepository = ref.watch(customerRepositoryProvider);
+  return CustomerNotifier(customerRepository);
 });
 
-class CustomerNotifier extends StateNotifier<List<Customer>> {
-  CustomerNotifier() : super([]) {
-    // Seed with some mock data for the frontend
-    state = [
-      Customer(
-        id: 'CUST-001',
-        name: 'John Doe',
-        panNumber: 'ABCDE1234F',
-        phoneNumber: '9876543210',
-        email: 'john@example.com',
-        address: '123 Main St, Mumbai',
-        createdDate: DateTime.now().subtract(const Duration(days: 10)),
-      ),
-      Customer(
-        id: 'CUST-002',
-        name: 'Jane Smith',
-        panNumber: 'FGHIJ5678K',
-        phoneNumber: '9123456780',
-        email: 'jane@example.com',
-        address: '456 Linking Rd, Delhi',
-        createdDate: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-    ];
+class CustomerNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
+  final CustomerRepository _customerRepository;
+
+  CustomerNotifier(this._customerRepository) : super(const AsyncValue.loading()) {
+    fetchCustomers();
   }
 
-  void addCustomer(Customer customer) {
-    state = [...state, customer];
+  Future<void> fetchCustomers() async {
+    state = const AsyncValue.loading();
+    try {
+      final customers = await _customerRepository.getCustomers();
+      state = AsyncValue.data(customers);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  Future<Customer> addCustomer(Map<String, dynamic> customerData) async {
+    try {
+      final newCustomer = await _customerRepository.createCustomer(customerData);
+      if (state.hasValue) {
+        state = AsyncValue.data([...state.value!, newCustomer]);
+      } else {
+        state = AsyncValue.data([newCustomer]);
+      }
+      return newCustomer;
+    } catch (e, stackTrace) {
+      // Handle error accordingly, maybe update a separate error state provider
+      // For now, keep the state as is and just throw
+      throw e;
+    }
   }
 
   List<Customer> searchCustomers(String query) {
-    if (query.isEmpty) return state;
+    if (!state.hasValue || query.isEmpty) return state.valueOrNull ?? [];
     
     final lowerQuery = query.toLowerCase();
-    return state.where((c) {
+    return state.value!.where((c) {
       return c.name.toLowerCase().contains(lowerQuery) || 
              c.panNumber.toLowerCase().contains(lowerQuery) ||
              c.phoneNumber.contains(query);

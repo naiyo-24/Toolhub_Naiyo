@@ -13,8 +13,10 @@ class LoanDeskDashboardTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider).user;
-    final cases = ref.watch(loanCaseProvider);
+    final userState = ref.watch(authProvider);
+    final user = userState.user;
+    final casesState = ref.watch(loanCaseProvider);
+    final cases = casesState.valueOrNull ?? [];
     
     return SafeArea(
       child: CustomScrollView(
@@ -39,7 +41,9 @@ class LoanDeskDashboardTab extends ConsumerWidget {
                       backgroundImage: user?.profilePhoto != null ? NetworkImage(user!.profilePhoto!) : null,
                       child: user?.profilePhoto == null
                           ? Text(
-                              user?.name?.substring(0, 1).toUpperCase() ?? 'B',
+                              (user?.fullName != null && user!.fullName.isNotEmpty) 
+                                  ? user.fullName.substring(0, 1).toUpperCase() 
+                                  : 'B',
                               style: const TextStyle(color: LoanDeskTheme.primaryBlack, fontWeight: FontWeight.bold, fontSize: 20),
                             )
                           : null,
@@ -53,7 +57,7 @@ class LoanDeskDashboardTab extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Good morning, ${user?.name?.split(' ').first ?? 'Banker'} 👋',
+                        'Good morning, ${user?.fullName.split(' ').first ?? 'Banker'} 👋',
                         style: const TextStyle(
                           color: LoanDeskTheme.primaryBlack,
                           fontWeight: FontWeight.w900,
@@ -74,20 +78,7 @@ class LoanDeskDashboardTab extends ConsumerWidget {
                 ),
               ],
             ),
-            actions: [
-              Container(
-                margin: const EdgeInsets.only(right: 16),
-                decoration: BoxDecoration(
-                  color: LoanDeskTheme.primaryPink,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.notifications_none, color: LoanDeskTheme.primaryBlack, size: 20),
-                  onPressed: () {},
-                ),
-              ),
-            ],
+            // actions removed
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(1.0),
               child: Container(
@@ -102,7 +93,13 @@ class LoanDeskDashboardTab extends ConsumerWidget {
               delegate: SliverChildListDelegate([
                 _buildSearchBar(),
                 const SizedBox(height: 24),
-                _buildStatsGrid(cases),
+                if (casesState.hasError)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    color: Colors.red.shade100,
+                    child: Text('Error loading cases: ${casesState.error}', style: const TextStyle(color: Colors.red)),
+                  ),
+                _buildStatsGrid(context, cases),
                 const SizedBox(height: 24),
                 _buildQuickActions(context),
                 const SizedBox(height: 24),
@@ -147,9 +144,19 @@ class LoanDeskDashboardTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsGrid(List<dynamic> cases) {
-    final activeCases = cases.where((c) => c.status != 'Completed').length;
-    final completedCases = cases.where((c) => c.status == 'Completed').length;
+  Widget _buildStatsGrid(BuildContext context, List<dynamic> cases) {
+    final activeCases = cases.where((c) => c.status != 'Completed' && c.status != 'Approved' && c.status != 'Rejected').length;
+    final completedCases = cases.where((c) => c.status == 'Completed' || c.status == 'Approved' || c.status == 'Rejected').length;
+    final pendingDocs = cases.where((c) => c.status.toString().contains('Pending') || c.status.toString().contains('DRAFT')).length;
+    final underReview = cases.where((c) => c.status.toString().contains('Review') || c.status.toString().contains('Verification')).length;
+
+    void navigateToCases() {
+      if (onSwitchTab != null) {
+        onSwitchTab!(2);
+      } else {
+        context.push('/loandesk/cases');
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,14 +173,16 @@ class LoanDeskDashboardTab extends ConsumerWidget {
                 title: 'Active Cases',
                 value: activeCases.toString(),
                 color: LoanDeskTheme.primaryYellow,
+                onTap: navigateToCases,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _StatCard(
                 title: 'Pending Docs',
-                value: '4',
+                value: pendingDocs.toString(),
                 color: LoanDeskTheme.primaryPink,
+                onTap: navigateToCases,
               ),
             ),
           ],
@@ -184,9 +193,10 @@ class LoanDeskDashboardTab extends ConsumerWidget {
             Expanded(
               child: _StatCard(
                 title: 'Under Review',
-                value: '7',
+                value: underReview.toString(),
                 color: LoanDeskTheme.primaryBlue,
                 textColor: LoanDeskTheme.primaryWhite,
+                onTap: navigateToCases,
               ),
             ),
             const SizedBox(width: 16),
@@ -195,6 +205,7 @@ class LoanDeskDashboardTab extends ConsumerWidget {
                 title: 'Completed',
                 value: completedCases.toString(),
                 color: LoanDeskTheme.primaryGreen,
+                onTap: navigateToCases,
               ),
             ),
           ],
@@ -232,15 +243,6 @@ class LoanDeskDashboardTab extends ConsumerWidget {
               GestureDetector(
                 onTap: () => context.push('/loandesk/cases/create'),
                 child: const _ActionChip(title: 'New Case', icon: Icons.add_box),
-              ),
-              const SizedBox(width: 12),
-              GestureDetector(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please select a Case first to scan documents into its vault.')),
-                  );
-                },
-                child: const _ActionChip(title: 'Scan Document', icon: Icons.document_scanner),
               ),
               const SizedBox(width: 12),
               GestureDetector(
@@ -298,7 +300,7 @@ class LoanDeskDashboardTab extends ConsumerWidget {
               child: GestureDetector(
                 onTap: () => context.push('/loandesk/cases/workspace/${loanCase.id}'),
                 child: _CaseCard(
-                  id: loanCase.id,
+                  id: loanCase.caseNumber,
                   name: loanCase.customerName,
                   type: loanCase.loanType,
                   amount: '₹${loanCase.amount.toStringAsFixed(0)}',
@@ -319,40 +321,45 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
   final Color textColor;
+  final VoidCallback? onTap;
 
   const _StatCard({
     required this.title,
     required this.value,
     required this.color,
     this.textColor = LoanDeskTheme.primaryBlack,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return NeoCard(
-      backgroundColor: color,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-              color: textColor,
+    return GestureDetector(
+      onTap: onTap,
+      child: NeoCard(
+        backgroundColor: color,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: textColor,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 32,
-              color: textColor,
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 32,
+                color: textColor,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

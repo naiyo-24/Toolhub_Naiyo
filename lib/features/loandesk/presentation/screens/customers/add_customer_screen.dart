@@ -33,34 +33,47 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
     super.dispose();
   }
 
-  void _saveCustomer() {
+  Future<void> _saveCustomer() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final newCustomer = Customer(
-        id: 'CUST-${const Uuid().v4().substring(0, 6).toUpperCase()}',
-        name: _nameController.text,
-        panNumber: _panController.text,
-        phoneNumber: _phoneController.text,
-        email: _emailController.text,
-        address: _addressController.text,
-        createdDate: DateTime.now(),
-      );
+      final newCustomerData = {
+        'name': _nameController.text,
+        'pan': _panController.text,
+        'phone': _phoneController.text,
+        'email': _emailController.text,
+        'address': _addressController.text,
+      };
 
-      ref.read(customerProvider.notifier).addCustomer(newCustomer);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Customer added successfully!', style: TextStyle(fontWeight: FontWeight.bold, color: LoanDeskTheme.primaryBlack)),
-          backgroundColor: LoanDeskTheme.primaryGreen,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius),
-            side: const BorderSide(color: LoanDeskTheme.primaryBlack, width: LoanDeskTheme.borderWidth),
-          ),
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-        ),
-      );
+      try {
+        await ref.read(customerProvider.notifier).addCustomer(newCustomerData);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Customer added successfully!', style: TextStyle(fontWeight: FontWeight.bold, color: LoanDeskTheme.primaryBlack)),
+              backgroundColor: LoanDeskTheme.primaryGreen,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius),
+                side: const BorderSide(color: LoanDeskTheme.primaryBlack, width: LoanDeskTheme.borderWidth),
+              ),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+            ),
+          );
 
-      context.pop();
+          context.pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error adding customer: $e', style: const TextStyle(fontWeight: FontWeight.bold, color: LoanDeskTheme.primaryWhite)),
+              backgroundColor: LoanDeskTheme.primaryRed,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -95,6 +108,7 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -112,14 +126,22 @@ class _AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
                 NeoTextField(
                   label: 'PAN Number *',
                   controller: _panController,
-                  validator: (value) => value == null || value.isEmpty ? 'PAN is required' : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'PAN is required';
+                    if (value.length != 10) return 'PAN must be exactly 10 characters';
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 NeoTextField(
                   label: 'Mobile Number *',
                   keyboardType: TextInputType.phone,
                   controller: _phoneController,
-                  validator: (value) => value == null || value.isEmpty ? 'Phone is required' : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Phone is required';
+                    if (value.length != 10) return 'Phone must be exactly 10 digits';
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 NeoTextField(

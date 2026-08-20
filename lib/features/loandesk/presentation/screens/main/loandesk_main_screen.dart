@@ -26,7 +26,13 @@ class _LoanDeskMainScreenState extends ConsumerState<LoanDeskMainScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = [
-      const LoanDeskDashboardTab(),
+      LoanDeskDashboardTab(
+        onSwitchTab: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
       CustomerListScreen(
         isTab: true,
         onBackToDashboard: _backToDashboard,
@@ -89,6 +95,7 @@ class _LoanDeskMainScreenState extends ConsumerState<LoanDeskMainScreen> {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'main_fab',
           backgroundColor: LoanDeskTheme.primaryBlue,
           shape: RoundedRectangleBorder(
             side: const BorderSide(color: LoanDeskTheme.primaryBlack, width: LoanDeskTheme.borderWidth),

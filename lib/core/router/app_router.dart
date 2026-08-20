@@ -134,7 +134,14 @@ import '../../features/loandesk/presentation/screens/documents/document_vault_sc
 import '../../features/loandesk/presentation/screens/documents/ocr_review_screen.dart';
 import '../../features/loandesk/presentation/screens/analysis/bank_statement_analyzer_screen.dart';
 import '../../features/loandesk/presentation/screens/cases/cam_report_preview_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/comparison_summary_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/bank_analysis_summary_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/financial_analysis_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/indicative_loan_calculator_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/document_checklist_screen.dart';
+import '../../features/loandesk/presentation/screens/cases/final_banker_report_screen.dart';
 import '../../features/loandesk/presentation/screens/profile/loandesk_profile_screen.dart';
+import '../../features/loandesk/presentation/screens/documents/document_preview_screen.dart';
 
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -729,6 +736,14 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
         },
       ),
       GoRoute(
+        path: '/loandesk/cases/document-preview/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final fileName = state.uri.queryParameters['name'] ?? 'Document Preview';
+          return DocumentPreviewScreen(documentId: int.parse(id), fileName: fileName);
+        },
+      ),
+      GoRoute(
         path: '/loandesk/scanner/ocr',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
@@ -748,6 +763,49 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return CamReportPreviewScreen(caseId: id);
+        },
+      ),
+
+      GoRoute(
+        path: '/loandesk/cases/comparison-summary/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ComparisonSummaryScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/cases/bank-analysis/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return BankAnalysisSummaryScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/cases/financial-analysis/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return FinancialAnalysisScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/cases/loan-calculator/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return IndicativeLoanCalculatorScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/cases/document-checklist/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DocumentChecklistScreen(caseId: id);
+        },
+      ),
+      GoRoute(
+        path: '/loandesk/cases/final-report/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return FinalBankerReportScreen(caseId: id);
         },
       ),
       GoRoute(

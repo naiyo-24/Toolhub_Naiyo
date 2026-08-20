@@ -22,6 +22,13 @@ class AuthNotifier extends StateNotifier<bool> {
 
   Future<void> _checkInitialAuth() async {
     final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+    
+    if (token != null && token.isNotEmpty) {
+      state = true;
+      return;
+    }
+    
     final isLoggedIn = prefs.getBool('is_business_logged_in') ?? false;
     state = isLoggedIn;
   }
@@ -50,7 +57,7 @@ class AuthNotifier extends StateNotifier<bool> {
                   user['company_name'].toString().isEmpty;
 
               final prefs = await SharedPreferences.getInstance();
-              await prefs.setString('auth_token', accessToken);
+              await prefs.setString('access_token', accessToken);
               await prefs.setBool('is_business_logged_in', true);
               await prefs.setBool('needs_profile', needsProfile);
               await prefs.setString('user_name', user['full_name'] ?? '');
@@ -93,7 +100,7 @@ class AuthNotifier extends StateNotifier<bool> {
   Future<void> signOut() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token');
+      final token = prefs.getString('access_token');
       if (token != null) {
         try {
           await http.post(
@@ -110,6 +117,7 @@ class AuthNotifier extends StateNotifier<bool> {
       await _googleSignIn.signOut();
     } catch (_) {}
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
     await prefs.remove('auth_token');
     await prefs.remove('user_name');
     await prefs.remove('user_email');

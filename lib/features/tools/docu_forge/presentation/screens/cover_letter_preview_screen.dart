@@ -20,7 +20,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
     pdf.addPage(
       pw.Page(
         pageFormat: format,
-        margin: const pw.EdgeInsets.all(32),
+        margin: pw.EdgeInsets.all(32),
         build: (pw.Context context) {
           if (data.templateType == 'Creative') {
             return _buildCreativeTemplate();
@@ -44,7 +44,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         // Header
-        pw.Text(data.fullName.toUpperCase(), style: const pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+        pw.Text(data.fullName.toUpperCase(), style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 8),
         pw.Text(
           [
@@ -53,7 +53,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
             if (data.linkedIn.isNotEmpty) data.linkedIn,
             if (data.address.isNotEmpty) data.address,
           ].where((s) => s.isNotEmpty).join('  |  '),
-          style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+          style: pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
         ),
         pw.SizedBox(height: 24),
         pw.Divider(),
@@ -62,7 +62,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
         // Date & Addressee
         pw.Text(date),
         pw.SizedBox(height: 16),
-        pw.Text(manager, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+        pw.Text(manager, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
         pw.Text(data.companyName),
         pw.SizedBox(height: 24),
         
@@ -79,7 +79,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
         // Sign-off
         pw.Text('Sincerely,'),
         pw.SizedBox(height: 24),
-        pw.Text(data.fullName, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+        pw.Text(data.fullName, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
       ],
     );
   }
@@ -98,20 +98,20 @@ class CoverLetterPreviewScreen extends StatelessWidget {
               flex: 1,
               child: pw.Container(
                 color: PdfColors.blue800,
-                padding: const pw.EdgeInsets.all(24),
+                padding: pw.EdgeInsets.all(24),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text(data.fullName, style: const pw.TextStyle(fontSize: 28, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+                    pw.Text(data.fullName, style: pw.TextStyle(fontSize: 28, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
                     pw.SizedBox(height: 8),
-                    pw.Text(data.targetRole, style: const pw.TextStyle(fontSize: 14, color: PdfColors.white)),
+                    pw.Text(data.targetRole, style: pw.TextStyle(fontSize: 14, color: PdfColors.white)),
                     pw.SizedBox(height: 40),
-                    pw.Text('CONTACT', style: const pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+                    pw.Text('CONTACT', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
                     pw.SizedBox(height: 8),
-                    pw.Text(data.email, style: const pw.TextStyle(fontSize: 10, color: PdfColors.white)),
-                    pw.Text(data.phone, style: const pw.TextStyle(fontSize: 10, color: PdfColors.white)),
-                    if (data.linkedIn.isNotEmpty) pw.Text(data.linkedIn, style: const pw.TextStyle(fontSize: 10, color: PdfColors.white)),
-                    if (data.address.isNotEmpty) pw.Text(data.address, style: const pw.TextStyle(fontSize: 10, color: PdfColors.white)),
+                    pw.Text(data.email, style: pw.TextStyle(fontSize: 10, color: PdfColors.white)),
+                    pw.Text(data.phone, style: pw.TextStyle(fontSize: 10, color: PdfColors.white)),
+                    if (data.linkedIn.isNotEmpty) pw.Text(data.linkedIn, style: pw.TextStyle(fontSize: 10, color: PdfColors.white)),
+                    if (data.address.isNotEmpty) pw.Text(data.address, style: pw.TextStyle(fontSize: 10, color: PdfColors.white)),
                   ],
                 ),
               ),
@@ -119,13 +119,13 @@ class CoverLetterPreviewScreen extends StatelessWidget {
             pw.Expanded(
               flex: 2,
               child: pw.Container(
-                padding: const pw.EdgeInsets.all(24),
+                padding: pw.EdgeInsets.all(24),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text(date, style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
+                    pw.Text(date, style: pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
                     pw.SizedBox(height: 16),
-                    pw.Text('To: $manager\n${data.companyName}', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    pw.Text('To: $manager\n${data.companyName}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                     pw.SizedBox(height: 24),
                     pw.Text('Dear $manager,'),
                     pw.SizedBox(height: 16),
@@ -137,7 +137,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
                     pw.SizedBox(height: 24),
                     pw.Text('Best regards,'),
                     pw.SizedBox(height: 24),
-                    pw.Text(data.fullName, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    pw.Text(data.fullName, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ],
                 ),
               ),
@@ -157,7 +157,7 @@ class CoverLetterPreviewScreen extends StatelessWidget {
       children: [
         // Header
         pw.Center(
-          child: pw.Text(data.fullName.toUpperCase(), style: const pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, letterSpacing: 2)),
+          child: pw.Text(data.fullName.toUpperCase(), style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, letterSpacing: 2)),
         ),
         pw.SizedBox(height: 4),
         pw.Center(
@@ -167,14 +167,14 @@ class CoverLetterPreviewScreen extends StatelessWidget {
               data.phone,
               if (data.linkedIn.isNotEmpty) data.linkedIn,
             ].where((s) => s.isNotEmpty).join(' | '),
-            style: const pw.TextStyle(fontSize: 9),
+            style: pw.TextStyle(fontSize: 9),
           ),
         ),
         pw.SizedBox(height: 32),
         
         pw.Text(date),
         pw.SizedBox(height: 12),
-        pw.Text('Re: ${data.targetRole} Position at ${data.companyName}', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+        pw.Text('Re: ${data.targetRole} Position at ${data.companyName}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 24),
         
         pw.Text('Dear $manager,'),

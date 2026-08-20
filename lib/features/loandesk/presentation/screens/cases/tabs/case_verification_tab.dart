@@ -1,152 +1,225 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../domain/entities/loan_case.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../theme/loandesk_theme.dart';
 import '../../../widgets/neo_card.dart';
 import '../../../widgets/neo_button.dart';
-import '../../../providers/verification_provider.dart';
 
-class CaseVerificationTab extends ConsumerWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../domain/entities/loan_case.dart';
+import '../../../providers/loan_case_provider.dart';
+
+class CaseVerificationTab extends ConsumerStatefulWidget {
   final LoanCase loanCase;
 
-  const CaseVerificationTab({super.key, required this.loanCase});
+  const CaseVerificationTab({
+    super.key,
+    required this.loanCase,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final verifications = ref.watch(verificationProvider(loanCase.id));
+  ConsumerState<CaseVerificationTab> createState() => _CaseVerificationTabState();
+}
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+class _CaseVerificationTabState extends ConsumerState<CaseVerificationTab> {
+
+  Future<void> _launchUrl(String url, BuildContext context) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not launch $url'),
+            backgroundColor: LoanDeskTheme.primaryRed,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Verification Hub',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.separated(
-              itemCount: verifications.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final module = verifications[index];
-                return NeoCard(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            module.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          _buildStatusBadge(module.status),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Provider: ${module.provider}',
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
-                      if (module.provider == 'Manual' && module.status != 'Verified') ...[
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: NeoButton(
-                                text: 'OPEN PORTAL',
-                                color: LoanDeskTheme.primaryWhite,
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Opening Official Government Portal...')),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: NeoButton(
-                                text: 'MARK VERIFIED',
-                                color: LoanDeskTheme.primaryGreen,
-                                onPressed: () {
-                                  ref.read(verificationProvider(loanCase.id).notifier)
-                                     .updateStatus(module.id, 'Verified');
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ] else if (module.status == 'Not Checked') ...[
-                        const SizedBox(height: 16),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              ref.read(verificationProvider(loanCase.id).notifier)
-                                 .updateStatus(module.id, 'Checking');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: LoanDeskTheme.primaryBlack,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius / 2),
-                              ),
-                            ),
-                            child: const Text('RUN CHECK', style: TextStyle(color: LoanDeskTheme.primaryWhite)),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                );
-              },
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: LoanDeskTheme.primaryBlack,
             ),
           ),
+          const SizedBox(height: 8),
+          const Text(
+            'Use the official government portals below to verify customer details and documents.',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 24),
+          
+          _buildPortalCard(
+            context,
+            title: 'GST Portal',
+            subtitle: 'Search, Validate & Download GST Data',
+            url: 'https://www.gst.gov.in',
+            color: LoanDeskTheme.primaryYellow,
+            icon: Icons.receipt_long,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildPortalCard(
+            context,
+            title: 'Udyam / MSME Portal',
+            subtitle: 'Verify & Download Udyam Certificate',
+            url: 'https://udyamregistration.gov.in',
+            color: LoanDeskTheme.primaryBlue,
+            icon: Icons.factory,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildPortalCard(
+            context,
+            title: 'Income Tax Portal',
+            subtitle: 'ITR & Tax Documents',
+            url: 'https://www.incometax.gov.in',
+            color: LoanDeskTheme.primaryGreen,
+            icon: Icons.account_balance,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildPortalCard(
+            context,
+            title: 'MCA Portal',
+            subtitle: 'Company Details & CIN',
+            url: 'https://www.mca.gov.in',
+            color: LoanDeskTheme.primaryPink,
+            icon: Icons.corporate_fare,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildPortalCard(
+            context,
+            title: 'IFSC / Bank Info',
+            subtitle: 'Verify Bank Branch details',
+            url: 'https://ifsc.razorpay.com',
+            color: LoanDeskTheme.primaryYellow,
+            icon: Icons.account_balance_wallet,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildPortalCard(
+            context,
+            title: 'RBI',
+            subtitle: 'Policies & Guidelines',
+            url: 'https://www.rbi.org.in',
+            color: LoanDeskTheme.primaryBlue,
+            icon: Icons.policy,
+          ),
+          
+          if (widget.loanCase.status == 'Under Verification' || widget.loanCase.status == 'In Progress')
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: NeoButton(
+                text: 'MARK AS VERIFIED',
+                isFullWidth: true,
+                color: LoanDeskTheme.primaryGreen,
+                onPressed: () async {
+                  try {
+                    await ref.read(loanCaseProvider.notifier).updateCaseStatus(widget.loanCase.id, 'Verified');
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Verification completed successfully!'),
+                          backgroundColor: LoanDeskTheme.primaryGreen,
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error: $e'),
+                          backgroundColor: LoanDeskTheme.primaryRed,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ),
+          const SizedBox(height: 80), // bottom padding
         ],
       ),
     );
   }
 
-  Widget _buildStatusBadge(String status) {
-    Color bgColor;
-    Color textColor = LoanDeskTheme.primaryBlack;
-    switch (status) {
-      case 'Verified':
-        bgColor = LoanDeskTheme.primaryGreen;
-        break;
-      case 'Checking':
-        bgColor = LoanDeskTheme.primaryYellow;
-        break;
-      case 'Failed':
-        bgColor = LoanDeskTheme.primaryPink;
-        break;
-      case 'Manual Review':
-        bgColor = LoanDeskTheme.primaryBlue;
-        textColor = LoanDeskTheme.primaryWhite;
-        break;
-      default:
-        bgColor = LoanDeskTheme.primaryWhite;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius),
-        border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
-      ),
-      child: Text(
-        status.toUpperCase(),
-        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 10, color: textColor),
+  Widget _buildPortalCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required String url,
+    required Color color,
+    required IconData icon,
+  }) {
+    return NeoCard(
+      padding: const EdgeInsets.all(16),
+      backgroundColor: LoanDeskTheme.primaryWhite,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: LoanDeskTheme.primaryBlack, width: 2),
+                ),
+                child: Icon(icon, color: LoanDeskTheme.primaryBlack),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: LoanDeskTheme.primaryBlack,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          NeoButton(
+            text: 'OPEN PORTAL',
+            isFullWidth: true,
+            color: color,
+            onPressed: () => _launchUrl(url, context),
+          ),
+        ],
       ),
     );
   }

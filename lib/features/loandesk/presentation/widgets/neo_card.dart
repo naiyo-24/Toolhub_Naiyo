@@ -18,6 +18,7 @@ class NeoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardContent = Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(LoanDeskTheme.borderRadius),

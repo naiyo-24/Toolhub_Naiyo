@@ -38,7 +38,7 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
     });
   }
 
-  void _nextPage() {
+  Future<void> _nextPage() async {
     bool canProceed = true;
 
     if (_currentPage == 0) {
@@ -57,8 +57,36 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
         curve: Curves.easeInOut,
       );
     } else {
-      ref.read(authProvider.notifier).completeProfile();
-      context.pushReplacement('/loandesk/dashboard');
+      final state = ref.read(onboardingProvider);
+      final profileData = {
+        'full_name': state.fullName,
+        'mobile': state.mobileNumber,
+        'date_of_birth': state.dateOfBirth?.toIso8601String(),
+        'role': state.role,
+        'designation': state.designation,
+        'experience_years': state.experience,
+        'employee_id': state.employeeId,
+        'org_type': state.orgType,
+        'org_name': state.orgName,
+        'branch_name': state.branchName,
+        'city': state.city,
+        'state_region': state.state,
+        'loan_types': state.loanTypes,
+        'is_profile_complete': true,
+      };
+      
+      try {
+        await ref.read(authProvider.notifier).completeProfile(profileData);
+        if (mounted) {
+          context.pushReplacement('/loandesk/dashboard');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error saving profile: $e')),
+          );
+        }
+      }
     }
   }
 
@@ -246,6 +274,7 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
                   NeoTextField(
                     label: 'Full Name *',
                     controller: TextEditingController(text: state.fullName)..selection = TextSelection.collapsed(offset: state.fullName.length),
+                    onChanged: (v) => notifier.updateField(fullName: v),
                     validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),
@@ -253,6 +282,7 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
                     label: 'Mobile Number *',
                     keyboardType: TextInputType.phone,
                     controller: TextEditingController(text: state.mobileNumber)..selection = TextSelection.collapsed(offset: state.mobileNumber.length),
+                    onChanged: (v) => notifier.updateField(mobileNumber: v),
                     validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),
@@ -260,6 +290,7 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
                     label: 'Email *',
                     keyboardType: TextInputType.emailAddress,
                     controller: TextEditingController(text: state.email)..selection = TextSelection.collapsed(offset: state.email.length),
+                    onChanged: (v) => notifier.updateField(email: v),
                     validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),
@@ -329,17 +360,23 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
                   NeoTextField(
                     label: 'Designation *',
                     hint: 'e.g. Senior Officer',
+                    controller: TextEditingController(text: state.designation)..selection = TextSelection.collapsed(offset: state.designation.length),
+                    onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(designation: v),
                     validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),
                   NeoTextField(
                     label: 'Years of Experience',
                     keyboardType: TextInputType.number,
+                    controller: TextEditingController(text: state.experience)..selection = TextSelection.collapsed(offset: state.experience.length),
+                    onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(experience: v),
                   ),
                   const SizedBox(height: 16),
-                  const NeoTextField(
+                  NeoTextField(
                     label: 'Employee / Agent ID (Optional)',
                     hint: 'EMP-1234',
+                    controller: TextEditingController(text: state.employeeId)..selection = TextSelection.collapsed(offset: state.employeeId.length),
+                    onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(employeeId: v),
                   ),
                 ],
               ),
@@ -375,15 +412,37 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
                     onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(orgType: v),
                   ),
                   const SizedBox(height: 16),
-                  NeoTextField(label: 'Organization Name *', validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+                  NeoTextField(
+                    label: 'Organization Name *',
+                    controller: TextEditingController(text: state.orgName)..selection = TextSelection.collapsed(offset: state.orgName.length),
+                    onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(orgName: v),
+                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                  ),
                   const SizedBox(height: 16),
-                  NeoTextField(label: 'Branch Name *', validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+                  NeoTextField(
+                    label: 'Branch Name *',
+                    controller: TextEditingController(text: state.branchName)..selection = TextSelection.collapsed(offset: state.branchName.length),
+                    onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(branchName: v),
+                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                  ),
                   const SizedBox(height: 16),
-                  const Row(
+                  Row(
                     children: [
-                      Expanded(child: NeoTextField(label: 'City')),
-                      SizedBox(width: 16),
-                      Expanded(child: NeoTextField(label: 'State')),
+                      Expanded(
+                        child: NeoTextField(
+                          label: 'City',
+                          controller: TextEditingController(text: state.city)..selection = TextSelection.collapsed(offset: state.city.length),
+                          onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(city: v),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: NeoTextField(
+                          label: 'State',
+                          controller: TextEditingController(text: state.state)..selection = TextSelection.collapsed(offset: state.state.length),
+                          onChanged: (v) => ref.read(onboardingProvider.notifier).updateField(state: v),
+                        ),
+                      ),
                     ],
                   ),
                 ],

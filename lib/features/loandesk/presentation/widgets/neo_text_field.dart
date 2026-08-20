@@ -9,6 +9,8 @@ class NeoTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final int maxLines;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
+  final bool readOnly;
 
   const NeoTextField({
     super.key,
@@ -19,6 +21,8 @@ class NeoTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.validator,
+    this.onChanged,
+    this.readOnly = false,
   });
 
   @override
@@ -59,8 +63,12 @@ class NeoTextField extends StatelessWidget {
                 obscureText: obscureText,
                 keyboardType: keyboardType,
                 maxLines: maxLines,
+                readOnly: readOnly,
                 onChanged: (value) {
                   state.didChange(value);
+                  if (onChanged != null) {
+                    onChanged!(value);
+                  }
                 },
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,

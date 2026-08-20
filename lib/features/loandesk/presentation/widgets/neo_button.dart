@@ -80,13 +80,17 @@ class _NeoButtonState extends State<NeoButton> {
               Icon(widget.icon, color: widget.textColor, size: 20),
               const SizedBox(width: 8),
             ],
-            Text(
-              widget.text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: widget.textColor,
-                fontWeight: FontWeight.w900,
-                fontSize: 15, // Reduced from 16 to fit without overflow
+            Flexible(
+              child: Text(
+                widget.text,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: widget.textColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                ),
               ),
             ),
           ],
