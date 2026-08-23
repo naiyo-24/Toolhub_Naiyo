@@ -9,6 +9,7 @@ import '../../../providers/document_provider.dart';
 import '../../../providers/ocr_provider.dart';
 import '../../../../domain/entities/document_requirement.dart';
 import '../../../../domain/entities/loan_case.dart';
+import '../../reports/case_summary_pdf_screen.dart';
 
 class CaseExtractionTab extends ConsumerStatefulWidget {
   final LoanCase loanCase;
@@ -196,7 +197,7 @@ class _CaseExtractionTabState extends ConsumerState<CaseExtractionTab> with Sing
                 const SizedBox(width: 16),
                 Expanded(
                   child: NeoButton(
-                    text: tabIndex < 3 ? 'Next: ${_getTabName(tabIndex + 1)}' : 'Next: Analysis',
+                    text: tabIndex < 3 ? 'Next: ${_getTabName(tabIndex + 1)}' : 'Generate CAM Report',
                     color: LoanDeskTheme.primaryBlue,
                     onPressed: () {
                       if (tabIndex < 3) {
@@ -218,11 +219,13 @@ class _CaseExtractionTabState extends ConsumerState<CaseExtractionTab> with Sing
                           }
                         }
                       } else {
-                        // Find the parent DefaultTabController (from CaseWorkspaceScreen) and move to index 4 (Analysis)
-                        final parentTabController = DefaultTabController.maybeOf(context);
-                        if (parentTabController != null) {
-                          parentTabController.animateTo(4);
-                        }
+                        // Generate PDF Report directly
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CaseSummaryPdfScreen(loanCase: widget.loanCase),
+                          ),
+                        );
                       }
                     },
                   ),

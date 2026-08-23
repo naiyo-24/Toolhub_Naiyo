@@ -38,6 +38,8 @@ class _CreateLoanCaseScreenState extends ConsumerState<CreateLoanCaseScreen> {
   final _gstinController = TextEditingController();
   final _cinController = TextEditingController();
   final _amountController = TextEditingController();
+  final _interestRateController = TextEditingController();
+  final _tenureController = TextEditingController();
   final _panSearchController = TextEditingController();
   final _dobController = TextEditingController();
   final _occupationController = TextEditingController();
@@ -55,6 +57,8 @@ class _CreateLoanCaseScreenState extends ConsumerState<CreateLoanCaseScreen> {
     _gstinController.dispose();
     _cinController.dispose();
     _amountController.dispose();
+    _interestRateController.dispose();
+    _tenureController.dispose();
     _panSearchController.dispose();
     _dobController.dispose();
     _occupationController.dispose();
@@ -166,6 +170,9 @@ class _CreateLoanCaseScreenState extends ConsumerState<CreateLoanCaseScreen> {
 
         final amount = double.tryParse(_amountController.text.replaceAll(',', '')) ?? 0.0;
         
+        final interestRate = double.tryParse(_interestRateController.text) ?? 0.0;
+        final tenureMonths = int.tryParse(_tenureController.text) ?? 0;
+        
         final rawDetails = {
           'customerType': _selectedCustomerType,
           'customerName': customerName,
@@ -181,6 +188,8 @@ class _CreateLoanCaseScreenState extends ConsumerState<CreateLoanCaseScreen> {
           'pan': _panController.text,
           'gstin': _gstinController.text,
           'cin': _cinController.text,
+          'interest_rate': interestRate,
+          'tenure_months': tenureMonths,
         };
 
         final newCaseData = {
@@ -188,6 +197,8 @@ class _CreateLoanCaseScreenState extends ConsumerState<CreateLoanCaseScreen> {
           'customer_name': customerName,
           'loan_type': _selectedLoanType!,
           'requested_amount': amount,
+          'interest_rate': interestRate,
+          'tenure_months': tenureMonths,
           'status': 'Documents Pending',
           'raw_details': rawDetails,
         };
@@ -417,6 +428,27 @@ class _CreateLoanCaseScreenState extends ConsumerState<CreateLoanCaseScreen> {
                     if (double.tryParse(value.replaceAll(',', '')) == null) return 'Enter a valid number';
                     return null;
                   },
+                ),
+                const SizedBox(height: 16),
+                
+                Row(
+                  children: [
+                    Expanded(
+                      child: NeoTextField(
+                        label: 'Interest Rate (%)',
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        controller: _interestRateController,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: NeoTextField(
+                        label: 'Tenure (Months)',
+                        keyboardType: TextInputType.number,
+                        controller: _tenureController,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
                 

@@ -5,7 +5,7 @@ import '../../theme/loandesk_theme.dart';
 import '../dashboard/loandesk_dashboard_tab.dart';
 import '../customers/customer_list_screen.dart';
 import '../cases/case_list_screen.dart';
-import '../analysis/bank_statement_analyzer_screen.dart';
+import '../profile/banker_profile_tab.dart';
 
 class LoanDeskMainScreen extends ConsumerStatefulWidget {
   const LoanDeskMainScreen({super.key});
@@ -41,10 +41,7 @@ class _LoanDeskMainScreenState extends ConsumerState<LoanDeskMainScreen> {
         isTab: true,
         onBackToDashboard: _backToDashboard,
       ),
-      BankStatementAnalyzerScreen(
-        isTab: true,
-        onBackToDashboard: _backToDashboard,
-      ),
+      const BankerProfileTab(),
     ];
 
     return PopScope(
@@ -88,8 +85,8 @@ class _LoanDeskMainScreenState extends ConsumerState<LoanDeskMainScreen> {
                 label: 'Cases',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.analytics),
-                label: 'Analysis',
+                icon: Icon(Icons.person),
+                label: 'Profile',
               ),
             ],
           ),

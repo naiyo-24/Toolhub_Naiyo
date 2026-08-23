@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.VideoView
 
 class SplashActivity : Activity() {
@@ -23,10 +25,13 @@ class SplashActivity : Activity() {
             mediaPlayer.setVolume(0f, 0f)
         }
         
-        videoView.setOnCompletionListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
+        // Force transition to main app after exactly 3 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!isFinishing) {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
+        }, 3000)
         
         videoView.start()
     }

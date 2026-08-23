@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/loan_case.dart';
 import '../../../theme/loandesk_theme.dart';
 import '../../../widgets/neo_card.dart';
 import '../../../widgets/neo_button.dart';
+import '../../reports/case_summary_pdf_screen.dart';
+import '../../../providers/document_provider.dart';
 
-class CaseOverviewTab extends StatelessWidget {
+class CaseOverviewTab extends ConsumerWidget {
   final LoanCase loanCase;
   
   const CaseOverviewTab({super.key, required this.loanCase});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final docsState = ref.watch(documentProvider(loanCase.id));
+    
+    String actionTitle = 'Next Action Required';
+    String actionDesc = 'Please collect and verify the pending documents from the Documents tab.';
+    Color cardColor = LoanDeskTheme.primaryYellow;
+    
+    if (docsState.value != null) {
+      final docs = docsState.value!;
+      final hasPending = docs.any((d) => d.status == 'Pending');
+      final hasUploaded = docs.any((d) => d.status == 'Uploaded');
+      
+      if (hasUploaded) {
+        actionTitle = 'Verification Pending';
+        actionDesc = 'New documents have been uploaded. Please go to the Documents tab and submit them for verification.';
+        cardColor = LoanDeskTheme.primaryYellow;
+      } else if (!hasPending && docs.isNotEmpty) {
+        actionTitle = 'Ready for Analysis';
+        actionDesc = 'All documents are verified. You can now run the AI Analysis.';
+        cardColor = LoanDeskTheme.primaryGreen;
+      }
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -49,13 +73,18 @@ class CaseOverviewTab extends StatelessWidget {
             color: LoanDeskTheme.primaryPink,
             textColor: LoanDeskTheme.primaryBlack,
             onPressed: () {
-              context.push('/loandesk/cases/cam/${loanCase.id}');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CaseSummaryPdfScreen(loanCase: loanCase),
+                ),
+              );
             },
           ),
           const SizedBox(height: 24),
           NeoCard(
             padding: const EdgeInsets.all(16),
-            backgroundColor: LoanDeskTheme.primaryYellow,
+            backgroundColor: cardColor,
             child: Row(
               children: [
                 const Icon(Icons.info_outline, size: 28),
@@ -63,14 +92,14 @@ class CaseOverviewTab extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Next Action Required',
-                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                        actionTitle,
+                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
                       ),
                       Text(
-                        'Please collect and verify the pending documents from the Documents tab.',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                        actionDesc,
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                       ),
                     ],
                   ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
-import '../../../../core/api/api_config.dart';
+import '../../../../../core/api/api_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -39,32 +39,6 @@ class _CaseWorkspaceScreenState extends ConsumerState<CaseWorkspaceScreen> with 
     super.dispose();
   }
 
-
-  Future<void> _downloadAndOpenReport(BuildContext context, String caseId, String caseNumber) async {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...')));
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
-      
-      final dir = await getApplicationDocumentsDirectory();
-      final filePath = '${dir.path}/Case_Report_$caseNumber.pdf';
-      
-      final dio = Dio();
-      if (token != null) {
-        dio.options.headers['Authorization'] = 'Bearer $token';
-      }
-      
-      await dio.download(
-        '${ApiConfig.loanDeskBaseUrl}/cases/$caseId/download-report',
-        filePath,
-      );
-      
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Report downloaded successfully!')));
-      await OpenFilex.open(filePath);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to download report: $e')));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,11 +97,6 @@ class _CaseWorkspaceScreenState extends ConsumerState<CaseWorkspaceScreen> with 
                         ),
                       ],
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.picture_as_pdf, color: LoanDeskTheme.primaryBlue),
-                    tooltip: "Download PDF Report",
-                    onPressed: () => _downloadAndOpenReport(context, loanCase.id.toString(), loanCase.caseNumber),
                   ),
                 ],
               ),

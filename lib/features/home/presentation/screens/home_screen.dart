@@ -918,6 +918,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   context.push('/travel-tools');
                 } else if (t.contains('Form')) {
                   context.push('/form-builder');
+                } else if (t.contains('LoanDesk')) {
+                  context.push('/loandesk/login');
                 } else {
                   _showComingSoon();
                 }
