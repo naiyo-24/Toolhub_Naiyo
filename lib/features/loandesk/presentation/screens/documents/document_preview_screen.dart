@@ -27,7 +27,7 @@ class _DocumentPreviewScreenState extends ConsumerState<DocumentPreviewScreen> {
     widget.fileName.toLowerCase().endsWith('.jpeg') || 
     widget.fileName.toLowerCase().endsWith('.png');
 
-  String get _downloadUrl => '${ApiConfig.baseUrl}/api/v1/documents/download/${widget.documentId}';
+  String get _downloadUrl => '${ApiConfig.baseUrl}/documents/download/${widget.documentId}';
 
   Map<String, String>? _headers;
   bool _isLoadingHeaders = true;

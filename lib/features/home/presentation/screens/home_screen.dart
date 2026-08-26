@@ -15,6 +15,7 @@ import 'package:tool_hub/features/home/presentation/screens/tabs/profile_tab.dar
 import 'package:tool_hub/features/home/presentation/providers/history_provider.dart';
 import 'package:tool_hub/core/utils/dialog_utils.dart';
 import 'package:tool_hub/core/providers/notification_provider.dart';
+import 'package:tool_hub/core/ads/banner_ad_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -286,10 +287,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _buildSearchBar(),
         ),
+        const SizedBox(height: 16),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: BannerAdWidget(),
+        ),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _buildProductivityBanner(),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildLoanDeskPromoBanner(),
         ),
         const SizedBox(height: 16),
         Padding(
@@ -315,7 +326,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         const SizedBox(height: 14),
         _buildRecentlyUsed(),
-        const SizedBox(height: 180),
+        const SizedBox(height: 24),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: BannerAdWidget(),
+        ),
+        const SizedBox(height: 150),
       ],
     ),
     );
@@ -570,6 +586,144 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoanDeskPromoBanner() {
+    return GestureDetector(
+      onTap: () {
+        context.push('/loandesk/login');
+      },
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFD166),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(5, 5), blurRadius: 0),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -20,
+              bottom: -20,
+              child: Transform.rotate(
+                angle: -0.2,
+                child: Icon(
+                  Icons.account_balance_rounded,
+                  size: 140,
+                  color: Colors.black.withValues(alpha: 0.05),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBlue,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.black, width: 2.5),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(3, 3), blurRadius: 0),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.account_balance_rounded,
+                        size: 36,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width:80),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryRed,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black, width: 1.5),
+                          ),
+                          child: Text(
+                            'NEW ARRIVAL',
+                            style: AppTextStyles.buttonText.copyWith(
+                              fontSize: 9,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'LOAN DESK',
+                          style: AppTextStyles.heroTitle.copyWith(
+                            fontSize: 26,
+                            color: Colors.black,
+                            letterSpacing: -0.5,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Smart workspace for bankers.',
+                          style: AppTextStyles.bodyText.copyWith(
+                            fontSize: 13,
+                            color: Colors.black87,
+                            height: 1.2,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 2),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black, offset: Offset(2, 2), blurRadius: 0),
+                            ],
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Try it Now',
+                                style: AppTextStyles.buttonText.copyWith(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primaryPurple,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.arrow_forward, size: 12, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

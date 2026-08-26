@@ -4,6 +4,7 @@ import 'package:tool_hub/core/theme/app_colors.dart';
 import 'package:tool_hub/core/theme/app_text_styles.dart';
 import 'package:tool_hub/core/widgets/neo_card.dart';
 import 'package:tool_hub/core/widgets/universal_tool_card.dart';
+import 'package:tool_hub/core/ads/banner_ad_widget.dart';
 
 
 class HealthLifestyleScreen extends StatefulWidget {
@@ -123,6 +124,13 @@ class _HealthLifestyleScreenState extends State<HealthLifestyleScreen> {
                           ),
                         ),
                       ),
+                  
+                    const SizedBox(height: 20),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: BannerAdWidget(),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),

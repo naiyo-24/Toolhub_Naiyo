@@ -43,7 +43,7 @@ class _CaseAnalysisTabState extends ConsumerState<CaseAnalysisTab> {
         dio.options.headers['Authorization'] = 'Bearer $token';
       }
 
-      final url = '${ApiConfig.loanDeskBaseUrl}/api/v1/analysis/case/${widget.loanCase.id}/evaluate';
+      final url = '${ApiConfig.loanDeskBaseUrl}/analysis/case/${widget.loanCase.id}/evaluate';
       final response = await dio.post(url);
       
       setState(() {

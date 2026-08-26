@@ -91,7 +91,7 @@ class LoanDeskDashboardTab extends ConsumerWidget {
             padding: const EdgeInsets.all(16.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                _buildSearchBar(),
+                _buildSearchBar(context),
                 const SizedBox(height: 24),
                 if (casesState.hasError)
                   Container(
@@ -113,7 +113,7 @@ class LoanDeskDashboardTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: LoanDeskTheme.primaryWhite,
@@ -130,15 +130,17 @@ class LoanDeskDashboardTab extends ConsumerWidget {
         ],
       ),
       child: TextField(
-        decoration: InputDecoration(
+        readOnly: true,
+        onTap: () => context.push('/loandesk/search'),
+        decoration: const InputDecoration(
           hintText: 'Search Customer / Case ID / PAN',
-          prefixIcon: const Icon(Icons.search, color: LoanDeskTheme.primaryBlack),
+          prefixIcon: Icon(Icons.search, color: LoanDeskTheme.primaryBlack),
           filled: false,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           errorBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );

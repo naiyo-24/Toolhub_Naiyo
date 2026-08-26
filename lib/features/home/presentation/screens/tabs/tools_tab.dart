@@ -6,6 +6,7 @@ import 'package:tool_hub/core/theme/app_text_styles.dart';
 import 'package:tool_hub/core/widgets/tool_card.dart';
 import 'package:tool_hub/core/utils/dialog_utils.dart';
 import 'package:tool_hub/features/auth/presentation/providers/auth_provider.dart';
+import 'package:tool_hub/core/ads/banner_ad_widget.dart';
 
 class ToolsTab extends ConsumerStatefulWidget {
   final List<Map<String, dynamic>> allTools;
@@ -138,6 +139,12 @@ class _ToolsTabState extends ConsumerState<ToolsTab> {
               },
             ),
         ),
+        const SizedBox(height: 16),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: BannerAdWidget(),
+        ),
+        const SizedBox(height: 120),
       ],
     );
   }

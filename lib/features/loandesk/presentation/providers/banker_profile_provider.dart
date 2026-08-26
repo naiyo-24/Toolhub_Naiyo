@@ -83,7 +83,7 @@ class BankerProfileNotifier extends StateNotifier<AsyncValue<BankerProfile?>> {
   Future<void> fetchProfile() async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiClient.get('/api/v1/banker/profile');
+      final response = await _apiClient.get('/banker/profile');
       if (response.statusCode == 200) {
         state = AsyncValue.data(BankerProfile.fromJson(response.data));
       } else {
@@ -105,8 +105,8 @@ class BankerProfileNotifier extends StateNotifier<AsyncValue<BankerProfile?>> {
       // Determine if we should POST (create) or PATCH (update)
       final hasExisting = state.valueOrNull != null;
       final response = hasExisting 
-          ? await _apiClient.patch('/api/v1/banker/profile', data: profile.toJson())
-          : await _apiClient.post('/api/v1/banker/profile', data: profile.toJson());
+          ? await _apiClient.patch('/banker/profile', data: profile.toJson())
+          : await _apiClient.post('/banker/profile', data: profile.toJson());
           
       if (response.statusCode == 200 || response.statusCode == 201) {
         state = AsyncValue.data(BankerProfile.fromJson(response.data));

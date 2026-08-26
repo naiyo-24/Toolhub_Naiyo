@@ -15,7 +15,7 @@ class OcrRepository {
 
   Future<Map<String, dynamic>> extractDocument(String documentId) async {
     try {
-      final response = await _apiClient.post('/api/v1/ocr/document/$documentId/extract', data: {});
+      final response = await _apiClient.post('/ocr/document/$documentId/extract', data: {});
       return response.data;
     } on DioException catch (e) {
       throw Exception('Failed to extract document: ${e.response?.data['detail'] ?? e.message}');

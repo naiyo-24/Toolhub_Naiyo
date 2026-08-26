@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tool_hub/features/auth/presentation/providers/auth_provider.dart';
+import 'package:tool_hub/core/ads/banner_ad_widget.dart';
 
 class ProfileTab extends ConsumerStatefulWidget {
   final VoidCallback onShowComingSoon;
@@ -166,7 +167,12 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
             ),
           ),
         ),
-        const SizedBox(height: 140),
+        const SizedBox(height: 32),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 0),
+          child: BannerAdWidget(),
+        ),
+        const SizedBox(height: 40),
       ],
     );
   }

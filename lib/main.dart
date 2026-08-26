@@ -12,6 +12,7 @@ import 'core/api/api_config.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tool_hub/core/widgets/network_overlay.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:tool_hub/features/tools/docu_forge/data/docuforge_database_service.dart';
 import 'package:tool_hub/features/tools/docu_forge/data/models/document_model.dart';
@@ -19,6 +20,7 @@ import 'package:tool_hub/features/tools/docu_forge/data/models/document_model.da
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  await MobileAds.instance.initialize();
   await DocuForgeDatabaseService.init();
   
   try {

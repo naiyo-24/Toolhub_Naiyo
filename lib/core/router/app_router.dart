@@ -125,6 +125,7 @@ import '../../features/loandesk/presentation/screens/login/loandesk_login_screen
 import '../../features/loandesk/presentation/screens/onboarding/onboarding_wizard_screen.dart';
 import '../../features/loandesk/presentation/screens/main/loandesk_main_screen.dart';
 import '../../features/loandesk/presentation/screens/customers/customer_list_screen.dart';
+import '../../features/loandesk/presentation/screens/dashboard/loandesk_search_screen.dart';
 import '../../features/loandesk/presentation/screens/customers/add_customer_screen.dart';
 import '../../features/loandesk/presentation/screens/cases/case_list_screen.dart';
 import '../../features/loandesk/presentation/screens/cases/create_loan_case_screen.dart';
@@ -693,6 +694,10 @@ GoRouter createAppRouter(bool hasSeenOnboarding, bool launchedFromNotification) 
       GoRoute(
         path: '/loandesk/dashboard',
         builder: (context, state) => const LoanDeskMainScreen(),
+      ),
+      GoRoute(
+        path: '/loandesk/search',
+        builder: (context, state) => const LoanDeskSearchScreen(),
       ),
       GoRoute(
         path: '/loandesk/customers',

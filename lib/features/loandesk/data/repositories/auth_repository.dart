@@ -41,7 +41,7 @@ class AuthRepository {
       var userJson = response.data as Map<String, dynamic>;
       
       try {
-        final bankerResponse = await _apiClient.get('/api/v1/banker/profile');
+        final bankerResponse = await _apiClient.get('/banker/profile');
         if (bankerResponse.data != null) {
           final bankerData = Map<String, dynamic>.from(bankerResponse.data);
           bankerData.removeWhere((key, value) => value == null);
@@ -60,7 +60,7 @@ class AuthRepository {
 
   Future<UserModel> updateProfile(Map<String, dynamic> data) async {
     try {
-      final response = await _apiClient.post('/api/v1/banker/profile', data: data);
+      final response = await _apiClient.post('/banker/profile', data: data);
       return UserModel.fromJson(response.data);
     } on DioException catch (e) {
       final errorMsg = e.response?.data['detail']?.toString() ?? e.message ?? '';
@@ -69,7 +69,7 @@ class AuthRepository {
       // Or just fetch the profile if PUT isn't supported.
       if (errorMsg.toLowerCase().contains('already exists')) {
         try {
-          final putResponse = await _apiClient.patch('/api/v1/banker/profile', data: data);
+          final putResponse = await _apiClient.patch('/banker/profile', data: data);
           return UserModel.fromJson(putResponse.data);
         } catch (putErr) {
            // If PUT fails (e.g. 405 Method Not Allowed), just fetch the full profile and proceed

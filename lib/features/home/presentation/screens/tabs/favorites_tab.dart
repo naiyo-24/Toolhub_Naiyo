@@ -7,6 +7,7 @@ import 'package:tool_hub/core/widgets/tool_card.dart';
 import 'package:tool_hub/core/utils/dialog_utils.dart';
 import 'package:tool_hub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:tool_hub/features/home/presentation/providers/favorites_provider.dart';
+import 'package:tool_hub/core/ads/banner_ad_widget.dart';
 
 class FavoritesTab extends ConsumerWidget {
   final VoidCallback onShowComingSoon;
@@ -95,6 +96,12 @@ class FavoritesTab extends ConsumerWidget {
               },
             ),
         ),
+        const SizedBox(height: 16),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: BannerAdWidget(),
+        ),
+        const SizedBox(height: 120),
       ],
     );
   }

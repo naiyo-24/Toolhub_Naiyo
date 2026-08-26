@@ -17,7 +17,7 @@ class DocumentRepository {
 
   Future<List<DocumentModel>> getCaseDocuments(String caseId) async {
     try {
-      final response = await _apiClient.get('/api/v1/documents/case/$caseId');
+      final response = await _apiClient.get('/documents/case/$caseId');
       final List data = response.data;
       return data.map((json) => DocumentModel.fromJson(json)).toList();
     } on DioException catch (e) {
@@ -50,7 +50,7 @@ class DocumentRepository {
       });
 
       final response = await _apiClient.post(
-        '/api/v1/documents/upload',
+        '/documents/upload',
         data: formData,
       );
       
@@ -62,7 +62,7 @@ class DocumentRepository {
 
   Future<Map<String, dynamic>> getDocumentAccess(int documentId) async {
     try {
-      final response = await _apiClient.get('/api/v1/documents/$documentId/access');
+      final response = await _apiClient.get('/documents/$documentId/access');
       return response.data;
     } on DioException catch (e) {
       throw Exception('Failed to get document access: ${e.response?.data['detail'] ?? e.message}');

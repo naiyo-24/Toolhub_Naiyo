@@ -32,7 +32,7 @@ class CaseSummaryPdfScreen extends ConsumerWidget {
       }
       
       await dio.download(
-        '${ApiConfig.loanDeskBaseUrl}/api/v1/cases/${loanCase.id}/download-report',
+        '${ApiConfig.loanDeskBaseUrl}/cases/${loanCase.id}/download-report',
         filePath,
       );
       
@@ -46,7 +46,7 @@ class CaseSummaryPdfScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Note: If you face a 404 here for viewing, you might need to update this URL as well.
-    final String pdfUrl = '${ApiConfig.loanDeskBaseUrl}/api/v1/cases/${loanCase.id}/download-report';
+    final String pdfUrl = '${ApiConfig.loanDeskBaseUrl}/cases/${loanCase.id}/download-report';
 
     return Scaffold(
       appBar: AppBar(
