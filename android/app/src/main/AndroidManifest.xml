@@ -13,6 +13,10 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
+        
+        <!-- Enable bitmap downsampling for performance -->
+        <meta-data android:name="android.graphics.downsample" android:value="true"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -42,8 +46,7 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="portrait">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -67,7 +70,6 @@
         
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <provider
@@ -80,10 +82,10 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <!-- Google Mobile Ads Test App ID -->
+        <!-- Google Mobile Ads App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-8699813078861252~8547605206"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

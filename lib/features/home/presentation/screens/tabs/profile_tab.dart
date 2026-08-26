@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tool_hub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:tool_hub/core/ads/banner_ad_widget.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class ProfileTab extends ConsumerStatefulWidget {
   final VoidCallback onShowComingSoon;
@@ -27,11 +28,22 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
   String _userEmail = '';
   String _userPic = '';
   bool _isSigningIn = false;
+  String _appVersion = '';
 
   @override
   void initState() {
     super.initState();
     _loadProfileData();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _appVersion = packageInfo.version;
+      });
+    }
   }
 
   Future<void> _loadProfileData() async {
@@ -160,7 +172,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
         const SizedBox(height: 32),
         Center(
           child: Text(
-            'Version 1.0.0',
+            _appVersion.isNotEmpty ? 'Version $_appVersion' : '',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               fontWeight: FontWeight.bold,
