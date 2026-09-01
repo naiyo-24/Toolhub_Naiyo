@@ -235,18 +235,7 @@ class _BusinessLoginScreenState extends ConsumerState<BusinessLoginScreen>
                           ),
                         ),
                         const SizedBox(height: 20),
-                        FutureBuilder<PackageInfo>(
-                          future: PackageInfo.fromPlatform(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return SelectableText(
-                                'Signature: ${snapshot.data?.buildSignature}',
-                                style: const TextStyle(color: Colors.black, fontSize: 10),
-                              );
-                            }
-                            return const SizedBox();
-                          },
-                        ),
+
                         const SizedBox(height: 20),
                       ],
                     ),

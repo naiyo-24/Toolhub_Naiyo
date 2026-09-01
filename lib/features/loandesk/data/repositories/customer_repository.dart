@@ -17,10 +17,23 @@ class CustomerRepository {
   Future<List<Customer>> getCustomers() async {
     try {
       final response = await _apiClient.get('/customers');
+      print('RAW API RESPONSE: ${response.data}');
+      
       final List data = response.data;
-      return data.map((json) => Customer.fromJson(json)).toList();
+      return data.map((json) {
+        try {
+          return Customer.fromJson(json);
+        } catch (e) {
+          print('FAILED TO PARSE CUSTOMER JSON: $json');
+          print('PARSE ERROR: $e');
+          rethrow;
+        }
+      }).toList();
     } on DioException catch (e) {
       throw Exception('Failed to fetch customers: ${e.response?.data['detail'] ?? e.message}');
+    } catch (e) {
+      print('ERROR IN GETCUSTOMERS: $e');
+      rethrow;
     }
   }
 

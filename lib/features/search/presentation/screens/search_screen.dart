@@ -14,6 +14,7 @@ import 'package:tool_hub/core/data/tools_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tool_hub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:tool_hub/features/tools/finance/presentation/screens/finance_tools_screen.dart';
+import 'package:tool_hub/features/tools/health_lifestyle/presentation/screens/health_lifestyle_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -217,6 +218,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           } else {
             context.push('/finance-tools/calculator', extra: financeTool);
           }
+          return;
+        }
+
+        // Check if it's a dynamic health tool
+        final healthTool = HealthLifestyleScreen.tools.where((t) => t['title'] == title).firstOrNull;
+        
+        if (healthTool != null) {
+          context.push('/health-lifestyle/tool', extra: healthTool);
           return;
         }
 

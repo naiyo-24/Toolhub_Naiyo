@@ -10,15 +10,7 @@ import 'package:tool_hub/core/ads/banner_ad_widget.dart';
 class HealthLifestyleScreen extends StatefulWidget {
   const HealthLifestyleScreen({super.key});
 
-  @override
-  State<HealthLifestyleScreen> createState() => _HealthLifestyleScreenState();
-}
-
-class _HealthLifestyleScreenState extends State<HealthLifestyleScreen> {
-  String _searchQuery = '';
-  bool _showAllTools = false;
-  
-  final List<Map<String, dynamic>> tools = [
+  static final List<Map<String, dynamic>> tools = [
       {'title': 'BMI Calculator', 'subtitle': 'Calculate your BMI', 'icon': Icons.monitor_weight_rounded, 'color': AppColors.primaryPink, 'actionText': 'Calculate', 'endpoint': '/bmi-calculator', 'config': [
         {'key': 'weight_kg', 'label': 'Weight (kg)', 'icon': Icons.scale, 'type': 'number'},
         {'key': 'height_cm', 'label': 'Height (cm)', 'icon': Icons.height, 'type': 'number'}
@@ -54,11 +46,17 @@ class _HealthLifestyleScreenState extends State<HealthLifestyleScreen> {
       ]},
   ];
 
+  @override
+  State<HealthLifestyleScreen> createState() => _HealthLifestyleScreenState();
+}
 
+class _HealthLifestyleScreenState extends State<HealthLifestyleScreen> {
+  String _searchQuery = '';
+  bool _showAllTools = false;
 
   @override
   Widget build(BuildContext context) {
-    var filteredTools = tools.where((tool) {
+    var filteredTools = HealthLifestyleScreen.tools.where((tool) {
       final title = (tool['title'] as String).toLowerCase();
       final query = _searchQuery.toLowerCase();
       return title.contains(query);
@@ -95,7 +93,7 @@ class _HealthLifestyleScreenState extends State<HealthLifestyleScreen> {
                         return _buildUtilityCard(context, tool);
                       },
                     ),
-                    if (_searchQuery.isEmpty && tools.length > 6)
+                    if (_searchQuery.isEmpty && HealthLifestyleScreen.tools.length > 6)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 40),
                         child: GestureDetector(

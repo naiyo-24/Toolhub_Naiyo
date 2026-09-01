@@ -164,7 +164,7 @@ class _OcrScannerScreenState extends ConsumerState<OcrScannerScreen> {
                     ),
                     child: _isLoading 
                       ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
-                      : Text('Scan Image', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _selectedFiles.isEmpty ? Colors.grey[500] : Colors.white)),
+                      : Text('Extract Text', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _selectedFiles.isEmpty ? Colors.grey[500] : Colors.white)),
                   ),
                 ),
                 if (_resultMessage.isNotEmpty) ...[

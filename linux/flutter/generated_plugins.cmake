@@ -6,7 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
   disk_space_2
   file_selector_linux
-  isar_flutter_libs
+  isar_community_flutter_libs
   printing
   record_linux
   syncfusion_pdfviewer_linux

@@ -8,7 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   disk_space_2
   file_selector_windows
   gal
-  isar_flutter_libs
+  isar_community_flutter_libs
   permission_handler_windows
   printing
   record_windows

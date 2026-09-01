@@ -49,6 +49,15 @@ class UserModel {
 
   String get name => fullName;
 
+  static DateTime? _safeParseDate(dynamic value) {
+    if (value == null || value.toString().trim().isEmpty) return null;
+    try {
+      return DateTime.parse(value.toString());
+    } catch (e) {
+      return null;
+    }
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id']?.toString() ?? '',
@@ -56,12 +65,12 @@ class UserModel {
       fullName: json['full_name']?.toString() ?? '',
       role: json['role']?.toString() ?? 'user',
       isActive: json['is_active'] ?? true,
-      createdAt: DateTime.parse(json['created_at']?.toString() ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updated_at']?.toString() ?? DateTime.now().toIso8601String()),
+      createdAt: _safeParseDate(json['created_at']) ?? DateTime.now(),
+      updatedAt: _safeParseDate(json['updated_at']) ?? DateTime.now(),
       profilePhoto: json['profile_photo'] ?? json['profile_pic'],
       isProfileComplete: (json['is_profile_complete'] == true) || (json['designation'] != null && json['employee_id'] != null),
       mobileNumber: (json['mobile'] ?? json['phone_number'] ?? json['mobile_number'])?.toString(),
-      dateOfBirth: json['date_of_birth'] != null ? DateTime.parse(json['date_of_birth']) : null,
+      dateOfBirth: _safeParseDate(json['date_of_birth']),
       loandeskRole: json['role']?.toString() ?? json['loandesk_role']?.toString(),
       designation: json['designation']?.toString(),
       experienceYears: json['experience_years']?.toString(),

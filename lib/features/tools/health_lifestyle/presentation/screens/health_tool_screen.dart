@@ -143,7 +143,14 @@ class _HealthToolScreenState extends State<HealthToolScreen> {
     });
 
     try {
-      final result = await _service.calculate(widget.tool['endpoint'], data);
+      Map<String, dynamic> result = {};
+      final localEndpoints = ['/water-tracker', '/medicine-alert', '/step-counter'];
+      
+      if (localEndpoints.contains(widget.tool['endpoint'])) {
+        result = {'status': 'success', 'message': 'Scheduled locally'};
+      } else {
+        result = await _service.calculate(widget.tool['endpoint'], data);
+      }
       
       if (widget.tool['endpoint'] == '/medicine-alert') {
         await _service.scheduleMedicineAlarm(
@@ -236,7 +243,6 @@ class _HealthToolScreenState extends State<HealthToolScreen> {
                 border: Border(top: BorderSide(color: Colors.black, width: 3), left: BorderSide(color: Colors.black, width: 3), right: BorderSide(color: Colors.black, width: 3)),
               ),
               padding: const EdgeInsets.all(24),
-              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -254,7 +260,7 @@ class _HealthToolScreenState extends State<HealthToolScreen> {
                       child: Text('No active reminders found.', style: TextStyle(color: Colors.grey, fontSize: 16)),
                     )
                   else
-                    Expanded(
+                    Flexible(
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemCount: pendingAlarms.length,
@@ -414,15 +420,26 @@ class _HealthToolScreenState extends State<HealthToolScreen> {
                 }
 
                 if (field['type'] == 'timepicker') {
+                  if (widget.tool['endpoint'] == '/water-tracker' && field['key'] == 'specific_time') {
+                    if (_dropdownValues['reminder_type'] != 'At Specific Time') {
+                      return const SizedBox.shrink();
+                    }
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: TextField(
                       controller: _controllers[field['key']],
                       readOnly: true,
                       onTap: () async {
+                        // Dismiss keyboard to prevent BoxConstraints height issues when dialog opens
+                        FocusScope.of(context).unfocus();
+                        await Future.delayed(const Duration(milliseconds: 300));
+                        
                         final TimeOfDay? time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.now(),
+                          initialEntryMode: TimePickerEntryMode.dialOnly,
                         );
                         if (time != null) {
                           final hh = time.hour.toString().padLeft(2, '0');
@@ -448,11 +465,16 @@ class _HealthToolScreenState extends State<HealthToolScreen> {
                       controller: _controllers[field['key']],
                       readOnly: true,
                       onTap: () async {
+                        // Dismiss keyboard to prevent BoxConstraints height issues when dialog opens
+                        FocusScope.of(context).unfocus();
+                        await Future.delayed(const Duration(milliseconds: 300));
+                        
                         final DateTime? date = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
+                          initialEntryMode: DatePickerEntryMode.calendarOnly,
                         );
                         if (date != null) {
                           final yyyy = date.year.toString();

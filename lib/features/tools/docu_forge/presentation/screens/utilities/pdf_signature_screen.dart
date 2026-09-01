@@ -317,12 +317,12 @@ class _PdfSignatureScreenState extends State<PdfSignatureScreen> {
                 Expanded(
                   child: ClipRect(
                     child: Stack(
+                      key: _bgImageKey,
                       children: [
                         // Background Document Page
                         Center(
                           child: Image.memory(
                             widget.imageBytes,
-                            key: _bgImageKey,
                             fit: BoxFit.contain,
                           ),
                         ),

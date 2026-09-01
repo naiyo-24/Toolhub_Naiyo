@@ -79,7 +79,7 @@ const DocumentSchema = CollectionSchema(
   getId: _documentGetId,
   getLinks: _documentGetLinks,
   attach: _documentAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _documentEstimateSize(

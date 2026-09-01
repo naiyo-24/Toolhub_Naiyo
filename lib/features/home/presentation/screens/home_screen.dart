@@ -16,6 +16,7 @@ import 'package:tool_hub/features/home/presentation/providers/history_provider.d
 import 'package:tool_hub/core/utils/dialog_utils.dart';
 import 'package:tool_hub/core/providers/notification_provider.dart';
 import 'package:tool_hub/core/ads/banner_ad_widget.dart';
+import 'package:in_app_update/in_app_update.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -62,6 +63,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _searchQuery = _searchController.text.toLowerCase();
       });
     });
+    
+    // Check for app updates
+    _checkForUpdates();
+  }
+
+  Future<void> _checkForUpdates() async {
+    try {
+      final info = await InAppUpdate.checkForUpdate();
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        await InAppUpdate.performImmediateUpdate();
+      }
+    } catch (e) {
+      debugPrint("Update check failed: $e");
+    }
   }
 
   Future<void> _loadUserData() async {

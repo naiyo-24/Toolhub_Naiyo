@@ -272,11 +272,15 @@ class _PreviewEnhanceScreenState extends ConsumerState<PreviewEnhanceScreen> {
 
         pdf.addPage(
           pw.Page(
-            pageFormat: PdfPageFormat.a4,
+            pageFormat: PdfPageFormat(
+              image.width?.toDouble() ?? PdfPageFormat.a4.width,
+              image.height?.toDouble() ?? PdfPageFormat.a4.height,
+              marginAll: 0,
+            ),
             build: (pw.Context context) {
               return pw.FullPage(
                 ignoreMargins: true,
-                child: pw.Image(image, fit: pw.BoxFit.contain),
+                child: pw.Image(image, fit: pw.BoxFit.cover),
               );
             },
           ),
